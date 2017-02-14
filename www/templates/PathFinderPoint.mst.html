@@ -1,0 +1,56 @@
+<form>
+    <fieldset data-role="controlgroup" data-type="horizontal">
+        <legend>{{ label }}
+            <!-- {{ #removable }} -->
+            <a class="btn btn-default pull-right" href="#" role="button" onclick="PathFinder.removePoint(this.id);"
+                    id="btnRemove{{ index }}" style="color:black; padding: 6px 3px;font-size: 16px">
+                <span id="pathFinderRemovePointButton">
+                    <script>
+                        $("#pathFinderRemovePointButton").html(
+                                    Globalization.labels.pathFinderMenu.removeDestinationButton)
+                    </script>
+                </span>
+            </a>
+            <!-- {{ /removable }} -->
+        </legend>
+        <select class="form-control" id="select{{ name }}" onchange="PathFinder.selectChange(this.id, this.value)" required>
+            <option id="pathFinderPlaceholderOpt{{ index }}" value="" disabled selected hidden>
+                <script>
+                    $("#pathFinderPlaceholderOpt{{ index }}").html(Globalization.labels.pathFinderMenu.choosePointSelection)
+                </script>
+            </option>
+            <option id="pathFinderGpsOpt{{ index }}" value="gps">
+                <script>
+                    $("#pathFinderGpsOpt{{ index }}").html(Globalization.labels.pathFinderMenu.gpsSelect)
+                </script>
+            </option>
+            <option id="pathFinderPointOpt{{ index }}" value="point">
+                <script>
+                    $("#pathFinderPointOpt{{ index }}").html(Globalization.labels.pathFinderMenu.mapSelect)
+                </script>
+            </option>
+            <option id="pathFinderTextOpt{{ index }}" value="text" disabled>
+                <script>
+                    $("#pathFinderTextOpt{{ index }}").html(Globalization.labels.pathFinderMenu.textSearchSelect)
+                </script>
+            </option>
+        </select>
+
+        <div id="divSearch{{ name }}" class="input-group" style="display:none">
+            <input id="textSearch{{ name }}" type="text" class="form-control" onkeypress="return PathFinder.keyPressEnter(event, '{{ name }}');">
+            <div class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="console.log('button click - Point {{ name }}');PathFinder.searchText();">
+                    <i class="glyphicon glyphicon-search"></i>
+                </button>
+            </div>
+        </div>
+
+    </fieldset>
+</form>
+<!-- {{ #address }} -->
+<span id="pathFinderAddressLabel{{ index }}">
+    <script>
+        $("#pathFinderAddressLabel{{ index }}").html(Globalization.labels.pathFinderMenu.addressLabel)
+    </script>
+</span>{{ address }}
+<!-- {{ /address }} -->

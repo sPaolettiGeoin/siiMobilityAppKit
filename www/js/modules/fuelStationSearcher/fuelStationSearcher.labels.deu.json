@@ -1,0 +1,8 @@
+﻿{
+  "principalMenu": {
+    "moduleFuelStationSearcher": "Fuel Station"
+  },
+  "fuelStationMenu": {
+    "title": "Fuel Station"
+  }
+}

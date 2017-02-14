@@ -1,0 +1,8 @@
+{
+  "principalMenu": {
+    "modulePathFinder": "Calcola Percorso"
+  },
+  "pathFinderMenu": {
+    "title": "Percorso"
+  }
+}

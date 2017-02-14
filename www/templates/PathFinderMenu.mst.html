@@ -1,0 +1,109 @@
+<div id="pathFinderMenuHeader" class="panel panel-default" style="position: absolute;right: 0px;left: 0px;border-radius: 0px;">
+    <div id="pathFinderMenuExpandHandler" class="grippyContainer grippyContainer-horizontal" style="text-align: center;">
+        <div class="grippy grippy-horizontal"></div>
+    </div>
+    <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
+        <a class="pull-right" onclick="PathFinder.hide();">
+            <i class="glyphicon glyphicon-remove"
+               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="pathFinderMenuExpand" class="pull-left" onclick="PathFinder.expandPathFinder();">
+            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="pathFinderMenuCollapse" class="pull-left" onclick="PathFinder.collapsePathFinder();">
+            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <b id="pathFinderMenuHeaderTitle" style="line-height: 52px;color: #333;">
+            <script>
+                $("#pathFinderMenuHeaderTitle").html(
+                    Globalization.labels.pathFinderMenu.title)
+            </script>
+        </b>
+
+    </div>
+</div>
+
+<div id="pathFinderMenuInner" class="commonHalfMenuInner">
+    <script type="text/javascript">
+        function showhide(id) {
+            var e = document.getElementById(id);
+            e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+        }
+    </script>
+    <div class="panel panel-default" style="margin: 0px 5px 10px 5px; color: #000; text-decoration: none;" >
+        
+        <div class="panel-body col-xs-3 card-2">
+            <a class="btn btn-default" href="#" role="button" onclick="PathFinder.getPath();" style="color:black; padding: 6px 3px;font-size: 16px">
+                <span id="pathFinderButton">
+                    <script>
+                        $("#pathFinderButton").html(Globalization.labels.pathFinderMenu.pathFinderButton)
+                    </script>
+                </span>
+            </a>
+            <a class="btn btn-default" href="#" role="button" onclick="PathFinder.resetPoints();" style="color:black; padding: 6px 3px;font-size: 16px">
+                <span id="resetPathFinderButton">
+                    <script>
+                        $("#resetPathFinderButton").html(Globalization.labels.pathFinderMenu.resetButton)
+                    </script>
+                </span>
+            </a>
+        </div>
+        <!-- {{ #showResult }} -->
+            <!-- {{ #results }} -->
+                <div class="panel-body pull-right col-xs-9 card-2" style="position:relative">
+                    <a class="btn btn-default pull-right" href="#" role="button" onclick="showhide('detailsPath{{index}}');" style="color:black; padding: 6px 3px;font-size: 16px">+/-</a>
+                    <span id="pathFinderFromLabel{{index}}">
+                        <script>
+                            $("#pathFinderFromLabel{{index}}").html(Globalization.labels.pathFinderMenu.fromLabel)
+                        </script>
+                    </span>{{ sourcePoint.address }}<br>
+                    <span id="pathFinderToLabel{{index}}">
+                        <script>
+                            $("#pathFinderToLabel{{index}}").html(Globalization.labels.pathFinderMenu.toLabel)
+                        </script>
+                    </span>{{ destPoint.address }}
+                </div>
+                <div id="detailsPath{{index}}" style="display:block">
+                <!-- {{ #journey.routes }} -->
+                    <div class="panel-body pull-right col-xs-9 card-2" style="position:relative">
+                        <span id="pathFinderDistanceLabel{{ index }}">
+                            <script>
+                                $("#pathFinderDistanceLabel{{ index }}").html(Globalization.labels.pathFinderMenu.distanceLabel)
+                            </script>
+                        </span>{{ distance }}m - <span id="pathFinderEtaLabel{{ index }}">
+                            <script>
+                                $("#pathFinderEtaLabel{{ index }}").html(Globalization.labels.pathFinderMenu.etaLabel)
+                            </script>
+                        </span>{{ eta }}
+                    </div>
+
+                    <div class="panel-body pull-right col-xs-9 card-2" style="position:relative">
+                        <!-- {{ #arc }} -->
+                            <a href="javascript:PathFinder.addMarker({{#destination_node}}{{lat}}, {{lon}}{{/destination_node}});">
+                                {{ transport }} {{ distance }}m - <span id="pathFinderEtaLabel{{ index }}">
+                                    <script>
+                                        $("#pathFinderEtaLabel{{ index }}").html(Globalization.labels.pathFinderMenu.etaLabel)
+                                    </script>
+                                </span>{{ end_datetime }}
+                            </a><br>
+                        <!-- {{ /arc }} -->
+                    </div>
+                <!-- {{ /journey.routes }} -->
+                </div>
+            <!-- {{ /results }} -->
+
+        <!-- {{ /showResult }} -->
+
+        <!-- {{ ^showResult }} -->
+            <!-- {{ #pathPoints }} -->
+            <div id="pathFinderPoint{{name}}" class="panel-body pull-right col-xs-9 card-2" style="position:relative">
+                
+            </div>
+            <!-- {{ /pathPoints }} -->
+            
+            <div class="panel-body pull-right col-xs-9 card-2" style="position:relative">
+                <a class="btn btn-default" href="#" role="button" onclick="PathFinder.addPoint();" style="color:black; padding: 6px 3px;font-size: 16px">+</a>
+            </div>
+        <!-- {{ /showResult }} -->
+    </div>
+</div>

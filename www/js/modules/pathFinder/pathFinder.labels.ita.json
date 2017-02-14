@@ -1,0 +1,28 @@
+{
+  "principalMenu": {
+    "modulePathFinder": "Calcola Percorso"
+  },
+  "pathFinderMenu": {
+    "title": "Percorso",
+    "pathFinderButton": "Naviga",
+    "resetButton": "Reset",
+    "addDestinationButton":  "Aggiungi Destinazione",
+    "removeDestinationButton":  "Rimuovi Destinazione",
+    "gpsSelect":  "Punto Gps",
+    "mapSelect":  "Punto sulla Mappa",
+    "textSearchSelect":  "Ricerca",
+    "choosePointSelection":  "Selezionare metodo di ricerca",
+    "startPointLabel":  "Partenza",
+    "destinationPointLabel":  "Destinazione",
+    "addressLabel": "Indirizzo: ",
+    "popupSelectLabel": "Seleziona",
+    "popupCancelLabel": "Annulla",
+    "fromLabel": "Da: ",
+    "toLabel": "A: ",
+    "distanceLabel": "Distanza: ",
+    "etaLabel": "Arrivo Previsto: ",
+
+    "alertInputTitle": "Input non valido",
+    "alertInputMessage": "Inserire tutti i punti del percorso!"
+  }
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "callback": "PrincipalMenu.hide(); MapManager.centerMapOnGps(); PathFinder.init();",
+    "iconId": "",
+    "iconClass": "",
+    "iconFontSize": "",
+    "iconColor": "",
+    "imgSrc": "",
+    "imgHeight": "",
+    "text": "Path",
+    "textFontSize": "38px",
+    "textColor": "#CC0000",
+    "captionId": "principalMenuPathFinder",
+    "captionTextId": "modulePathFinder",
+    "step": "",
+    "stepId": "",
+    "ribbon": true,
+    "ribbonId": "",
+    "ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+    "ribbonText":  "NEW",
+    "removed": false,
+    "index": 0
+  }
+]

@@ -1,0 +1,53 @@
+
+<div id="fuelStationMenuHeader" class="panel panel-default" style="position: absolute;right: 0px;left: 0px;border-radius: 0px;">
+    <div id="fuelStationMenuExpandHandler" class="grippyContainer grippyContainer-horizontal" style="text-align: center;">
+        <div class="grippy grippy-horizontal"></div>
+    </div>
+    <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
+        <a class="pull-right" onclick="FuelStationSearcher.hide();">
+            <i class="glyphicon glyphicon-remove"
+               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="fuelStationMenuExpand" class="pull-left" onclick="FuelStationSearcher.expandFuelStationSearcher();">
+            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="fuelStationMenuCollapse" class="pull-left" onclick="FuelStationSearcher.collapseFuelStationSearcher();">
+            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <b id="fuelStationMenuHeaderTitle" style="line-height: 52px;color: #333;">
+            <script>
+                $("#fuelStationMenuHeaderTitle").html(
+                    Globalization.labels.fuelStationMenu.title)
+            </script>
+        </b>
+
+    </div>
+</div>
+
+<div id="fuelStationMenuInner" class="commonHalfMenuInner">
+    <!-- {{#features}} {{#properties}}-->
+    <div class="panel panel-default" style="margin: 0px 5px 10px 5px; color: #000; text-decoration: none;" onclick="InfoManager.showInfoAboutOneMarker('{{#properties}}{{serviceUri}}{{/properties}}',{{#geometry}}{{coordinates.1}}, {{coordinates.0}}{{/geometry}});MapManager.addSelectedServiceMarker('{{serviceType}}','{{nameEscaped}}','{{civic}}','{{busLines}}','{{agency}}','{{serviceUri}}'{{/properties}},{{#geometry}}{{coordinates.1}}, {{coordinates.0}}{{/geometry}}, '{{#properties}}{{alternativeIcon}}{{/properties}}');">
+        <div class="panel-body card-2" style="position:relative">
+            {{#properties}}
+                
+                {{#imageThumb}}<img id="fuelStationMenuImage{{identifier}}" src="{{imageThumb}}"
+                                    style="margin-right: 8px; float: left; max-height: 90px; max-width: 90px" class="card-3">{{/imageThumb}}
+                <img src="{{imgsrc}}" style="padding-right: 8px; float: left">
+                <b style="text-align: center">{{#unescapeHtml}}{{name}}{{/unescapeHtml}}</b>
+                {{#typeLabel}}<br><b id="fuelStationMenuTypeLabel{{identifier}}">
+                    <script>$("#fuelStationMenuTypeLabel{{identifier}}").html(Globalization.labels.infoMenu.type)</script>
+                </b>{{typeLabel}}{{/typeLabel}}
+                {{#distanceFromSearchCenter}}<br><b id="fuelStationMenuTextSearchDistanceFromSearchCenter{{identifier}}">
+                    <script>$("#fuelStationMenuTextSearchDistanceFromSearchCenter{{identifier}}").html(Globalization.labels.textSearchMenu.distanceFromSearchCenter)</script>
+                </b>{{distanceFromSearchCenter}} m{{/distanceFromSearchCenter}}
+                {{#distanceFromGPS}}<br><b id="fuelStationMenuTextSearchDistanceFromGPS{{identifier}}">
+                    <script>$("#fuelStationMenuTextSearchDistanceFromGPS{{identifier}}").html(Globalization.labels.textSearchMenu.distanceFromGPS)</script>
+                </b>{{distanceFromGPS}} m{{/distanceFromGPS}}
+                {{#fuelPrices}}
+                    <br><b>{{fuel.value}}{{#isSelf}} (self){{/isSelf}}</b> - {{price.value}} {{currency.value}}
+                {{/fuelPrices}}
+            {{/properties}}
+        </div>
+    </div>
+    <!-- {{/features}} -->
+</div>
