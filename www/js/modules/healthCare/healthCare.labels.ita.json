@@ -1,0 +1,33 @@
+{
+  "principalMenu": {
+    "moduleHealthCare": "Tieniti in forma"
+  },
+  "healthCareMenu": {
+    "title": "Tieniti in forma",
+    "healthCareButton": "Naviga",
+    
+	"modifyButton": "Modifica",
+    "addDestinationButton":  "Aggiungi Destinazione",
+    "removeDestinationButton":  "Rimuovi Destinazione",
+    "gpsSelect":  "Punto Gps",
+    "mapSelect":  "Punto sulla Mappa",
+    "textSearchSelect":  "Ricerca",
+    "choosePointSelection":  "Selezionare metodo di ricerca",
+    "startPointLabel":  "Partenza",
+    "destinationPointLabel":  "Destinazione",
+    "addressLabel": "Indirizzo: ",
+    "popupSelectLabel": "Seleziona",
+    "popupCancelLabel": "Annulla",
+    "fromLabel": "Da: ",
+    "toLabel": "A: ",
+    "distanceLabel": "Distanza: ",
+    "etaLabel": "Arrivo Previsto: ",
+	"characteristics": "Caratteristiche",
+	"sex": "Sesso",
+	"weight": "Peso",
+	"hints": "Suggerimenti",
+
+    "alertInputTitle": "Input non valido",
+    "alertInputMessage": "Inserire tutti i punti del percorso!"
+  }
+}

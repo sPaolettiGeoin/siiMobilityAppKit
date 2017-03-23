@@ -1,0 +1,24 @@
+[
+  {
+    "callback": "console.log(\"dbg111\");PrincipalMenu.hide();console.log(\"dbg222\");HealthCare.init();console.log(\"dbg333\");",
+    "iconId": "",
+    "iconClass": "glyphicon glyphicon-heart",
+    "iconFontSize": "35px",
+    "iconColor": "#660000",
+    "imgSrc": "",
+    "imgHeight": "",
+    "text": "",
+    "textFontSize": "38px",
+    "textColor": "#CC0000",
+    "captionId": "principalMenuHealthCare",
+    "captionTextId": "moduleHealthCare",
+    "step": "",
+    "stepId": "",
+    "ribbon": true,
+    "ribbonId": "",
+    "ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+    "ribbonText":  "NEW",
+    "removed": false,
+    "index": 0
+  }
+]
