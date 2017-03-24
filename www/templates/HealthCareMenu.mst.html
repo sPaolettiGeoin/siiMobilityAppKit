@@ -18,12 +18,37 @@
 </div>
 
 <div id="healthCareMenuInner" class="commonHalfMenuInner">
-    {{ datiAnagrafici.nome }}
+    {{ datiAnagrafici.name }}
 	<fieldset>
 	<legend>{{fieldset_characteristics}}</legend>
-	{{fs_char_sex}}: {{ datiAnagrafici.sesso }}
-	{{fs_char_weight}}: {{ datiAnagrafici.peso }}
-	<button onclick="HealthCare.updateDatiAnagrafici();">{{modifyButton}}</button>
+	{{#datiAnagrafici}}
+		{{^inModification}}
+			{{fs_char_sex}}: {{ sex }}
+			{{fs_char_weight}}: {{ weight }}
+			<br>
+			{{fs_char_age}}: {{ age }}
+			{{fs_char_height}}: {{ height }}
+			<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
+				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
+			</a>
+		{{/inModification}}
+		{{#inModification}}
+			<form method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
+				{{fs_char_sex}}:
+				<select name="sex" id="sex">
+					{{#sexOptions()}}
+						<option name="{{key}}" {{selected}}>{{value}}</option>
+					{{/options_sex}}
+				</select>
+				{{fs_char_weight}}: {{ weight }}
+				<br>
+				{{fs_char_age}}: {{ age }}
+				{{fs_char_height}}: {{ height }}
+				<button onclick="HealthCare.switchUpdateDatiAnagrafici(false);">{{cancelButton}}</button>
+				<button type="submit">{{modifyButton}}</button>
+			</form>
+		{{/inModification}}
+	{{/datiAnagrafici}}
 	</fieldset>
 	<fieldset>
 	<legend>{{hints}}</legend>

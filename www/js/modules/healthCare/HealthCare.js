@@ -1,12 +1,20 @@
 var HealthCare = {
-	
 	datiAnagrafici: {
-		nome: "Fabio Biffoli",
-		sesso: "M",
-		peso: "65Kg"
+		name: "",
+		sex: "",
+		weight: "",
+		age: "",
+		height: "",
+		inModification: false,
+		sexOptions: function {
+			var options = [];
+			//options.length = 2;
+			//options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === "M" ? "selected" : ""};
+			//options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === "F" ? "selected" : ""};
+			return options;
+		}
 	},
-
-    open: false,
+	open: false,
     expanded: false,
     results: [],
     showResult: false,
@@ -42,11 +50,15 @@ var HealthCare = {
 		HealthCare.fieldset_characteristics = Globalization.labels.healthCareMenu.characteristics;
 		HealthCare.fs_char_sex = Globalization.labels.healthCareMenu.sex;
 		HealthCare.fs_char_weight = Globalization.labels.healthCareMenu.weight;
+		HealthCare.fs_char_age = Globalization.labels.healthCareMenu.age;
+		HealthCare.fs_char_height = Globalization.labels.healthCareMenu.height;
+		HealthCare.cancelButton = Globalization.labels.healthCareMenu.popupCancelLabel;
 		HealthCare.modifyButton = Globalization.labels.healthCareMenu.modifyButton;
 		HealthCare.hints = Globalization.labels.healthCareMenu.hints;
         //HealthCare.startPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/FirstStopOfRoute.png', "classic");
         //HealthCare.destPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/LastStopOfRoute.png', "classic");
         
+		HealthCare.loadDatiAnagrafici();
         HealthCare.show();
 		
 		HealthCare.getHint();
@@ -126,7 +138,7 @@ var HealthCare = {
             $("#indexPage").
                 append("<div id=\"" + HealthCare.idMenu + "\" class=\"commonHalfMenu\"></div>")
         }
-		console.log("dbg020");
+		//console.log("dbg020");
 		
         ViewManager.render(HealthCare, "#" + HealthCare.idMenu, "HealthCareMenu");
 		/*
@@ -165,24 +177,24 @@ var HealthCare = {
     },
 
     searchLocation: function() {
-		console.log("dbg040");
+		//console.log("dbg040");
         var locationQuery = QueryManager.createLocationQuery(HealthCare.coordinates, "user");
         APIClient.executeQuery(locationQuery, HealthCare.successQueryLocation, HealthCare.errorQuery);
     },
 
     searchText: function() {
-		console.log("dbg050");
+		//console.log("dbg050");
         var text = $("#textSearch" + HealthCare.lastSelected.name).val();
         var textQuery = QueryManager.createFullTextQuery(text);
         APIClient.executeQuery(textQuery, HealthCare.successQueryText, HealthCare.errorQuery, "user");
     },
     renderSingleService: function(singleService){
-		console.log("dbg010: " + singleService);
+		//console.log("dbg010: " + singleService);
         ViewManager.render(singleService, "#" + InfoManager.idMenu, "js/modules/HealthCare.mst.html");
     },
 //callBack
     successQueryLocation: function (response) {
-		console.log("dbg030: " + response);
+		//console.log("dbg030: " + response);
         for (var point of PathFinder.pathPoints) {
             if (PathFinder.lastSelected && (PathFinder.lastSelected.name == point.name)) {
                 point.coordinates = PathFinder.coordinates;
@@ -196,7 +208,7 @@ var HealthCare = {
     },
 
     successQueryPath: function (response) {
-		console.log("dbg070");
+		//console.log("dbg070");
         if (response.journey && response.journey.routes[0]) {
             var i = PathFinder.curDestPointQuery;
             var indexRoute = 0;
@@ -218,9 +230,9 @@ var HealthCare = {
     },
 
     successQueryText: function (response) {
-		console.log("dbg080");
+		//console.log("dbg080");
         for (var f of response.features) {
-            console.log(f.id + " " + f.properties.name + " " + f.properties.tipo)
+            //console.log(f.id + " " + f.properties.name + " " + f.properties.tipo)
         }
     },
 
@@ -231,23 +243,45 @@ var HealthCare = {
     },
 
     resetSearch: function () {
-		console.log("dbg100");
+		//console.log("dbg100");
         QueryManager.resetMaxDists();
         Loading.hideAutoSearchLoading();
     },
-	updateDatiAnagrafici: function() {
-		HealthCare.datiAnagrafici.peso = "55Kg";
+	loadDatiAnagrafici: function() {
+		HealthCare.datiAnagrafici.name = localStorage.getItem("name");
+		HealthCare.datiAnagrafici.sex = localStorage.getItem("sex");
+		HealthCare.datiAnagrafici.weight = localStorage.getItem("weight");
+		HealthCare.datiAnagrafici.age = localStorage.getItem("age");
+		HealthCare.datiAnagrafici.height = localStorage.getItem("height");
+	},
+	switchUpdateDatiAnagrafici: function(inModification) {
+		HealthCare.datiAnagrafici.inModification = inModification;
+        
 		HealthCare.refreshMenu();
+	},
+	updateDatiAnagrafici: function(formData) {
+		console.log("formData: " + formData);
+		console.log("formData: " + JSON.stringify(formData));
+		
+		localStorage.setItem("name", formData.name);
+		localStorage.setItem("sex", formData.sex);
+		localStorage.setItem("weight", formData.weight);
+		localStorage.setItem("age", formData.age);
+		localStorage.setItem("height", formData.height);
+		
+		HealthCare.loadDatiAnagrafici();
+        
+		HealthCare.switchUpdateDatiAnagrafici(false);
 	},
 	getHint: function() {
         var actionQuery = QueryManager.createRetrieveActionsQuery();
 		console.log("actionQuery: " + actionQuery);
 		HealthCare.hint = "Informazione non ricevuta";
 		HealthCare.refreshMenu();
-        APIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
+        //APIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
 	successQueryAction: function (response) {
-		console.log("dbg030: " + response);
+		//console.log("dbg030: " + response);
         HealthCare.hint = response;
 		HealthCare.refreshMenu();
     },

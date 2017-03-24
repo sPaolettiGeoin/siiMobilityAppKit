@@ -23,9 +23,14 @@
     "distanceLabel": "Distanza: ",
     "etaLabel": "Arrivo Previsto: ",
 	"characteristics": "Caratteristiche",
-	"sex": "Sesso",
-	"weight": "Peso",
+	"sex": "Sesso (anni)",
+	"weight": "Peso (Kg)",
+	"age": "Età (anni)",
+	"height": "Altezza (cm)",
 	"hints": "Suggerimenti",
+	
+	"options_sex_M": "Uomo",
+	"options_sex_F": "Donna",
 
     "alertInputTitle": "Input non valido",
     "alertInputMessage": "Inserire tutti i punti del percorso!"
