@@ -1,6 +1,6 @@
 [
   {
-    "callback": "console.log(\"dbg111\");PrincipalMenu.hide();console.log(\"dbg222\");HealthCare.init();console.log(\"dbg333\");",
+    "callback": "PrincipalMenu.hide();HealthCare.init();",
     "iconId": "",
     "iconClass": "glyphicon glyphicon-heart",
     "iconFontSize": "35px",

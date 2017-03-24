@@ -33,17 +33,18 @@
 			</a>
 		{{/inModification}}
 		{{#inModification}}
-			<form method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
+			<form name="datiAnagraficiForm" method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
+				{{fs_char_name}}: <input name="name" value="{{ name }}"></input>
 				{{fs_char_sex}}:
 				<select name="sex" id="sex">
-					{{#sexOptions()}}
+					{{#sexOptions}}
 						<option name="{{key}}" {{selected}}>{{value}}</option>
-					{{/options_sex}}
+					{{/sexOptions}}
 				</select>
-				{{fs_char_weight}}: {{ weight }}
+				{{fs_char_weight}}: <input name="weight" value="{{ weight }}"></input>
 				<br>
-				{{fs_char_age}}: {{ age }}
-				{{fs_char_height}}: {{ height }}
+				{{fs_char_age}}: <input name="age" value="{{ age }}"></input>
+				{{fs_char_height}}: <input name="height" value="{{ height }}"></input>
 				<button onclick="HealthCare.switchUpdateDatiAnagrafici(false);">{{cancelButton}}</button>
 				<button type="submit">{{modifyButton}}</button>
 			</form>

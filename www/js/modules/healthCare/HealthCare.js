@@ -6,11 +6,11 @@ var HealthCare = {
 		age: "",
 		height: "",
 		inModification: false,
-		sexOptions: function {
+		sexOptions: function() {
 			var options = [];
-			//options.length = 2;
-			//options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === "M" ? "selected" : ""};
-			//options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === "F" ? "selected" : ""};
+			options.length = 2;
+			options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === Globalization.labels.healthCareMenu.options_sex_M ? "selected" : ""};
+			options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === Globalization.labels.healthCareMenu.options_sex_F ? "selected" : ""};
 			return options;
 		}
 	},
@@ -48,6 +48,7 @@ var HealthCare = {
 	init: function() {
         HealthCare.menuHeaderTitle = Globalization.labels.healthCareMenu.title;
 		HealthCare.fieldset_characteristics = Globalization.labels.healthCareMenu.characteristics;
+		HealthCare.fs_char_name = Globalization.labels.healthCareMenu.name;
 		HealthCare.fs_char_sex = Globalization.labels.healthCareMenu.sex;
 		HealthCare.fs_char_weight = Globalization.labels.healthCareMenu.weight;
 		HealthCare.fs_char_age = Globalization.labels.healthCareMenu.age;
@@ -259,15 +260,12 @@ var HealthCare = {
         
 		HealthCare.refreshMenu();
 	},
-	updateDatiAnagrafici: function(formData) {
-		console.log("formData: " + formData);
-		console.log("formData: " + JSON.stringify(formData));
-		
-		localStorage.setItem("name", formData.name);
-		localStorage.setItem("sex", formData.sex);
-		localStorage.setItem("weight", formData.weight);
-		localStorage.setItem("age", formData.age);
-		localStorage.setItem("height", formData.height);
+	updateDatiAnagrafici: function() {
+		localStorage.setItem("name", document.datiAnagraficiForm.name.value);
+		localStorage.setItem("sex", document.datiAnagraficiForm.sex.value);
+		localStorage.setItem("weight", document.datiAnagraficiForm.weight.value);
+		localStorage.setItem("age", document.datiAnagraficiForm.age.value);
+		localStorage.setItem("height", document.datiAnagraficiForm.height.value);
 		
 		HealthCare.loadDatiAnagrafici();
         
