@@ -20,33 +20,45 @@
 <div id="healthCareMenuInner" class="commonHalfMenuInner">
     {{ datiAnagrafici.name }}
 	<fieldset>
-	<legend>{{fieldset_characteristics}}</legend>
-	{{#datiAnagrafici}}
-		{{^inModification}}
-			{{fs_char_sex}}: {{ sex }}
-			{{fs_char_weight}}: {{ weight }}
-			<br>
-			{{fs_char_age}}: {{ age }}
-			{{fs_char_height}}: {{ height }}
-			<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
+	<legend>{{fieldset_characteristics}}
+	<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
 				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
 			</a>
+	</legend>
+	{{#datiAnagrafici}}
+		{{^inModification}}
+		<div class="row">
+			<div class="col-xs-2">{{fs_char_sex}}: </div><div class="col-xs-4"> {{ sex }}</div>
+			<div class="col-xs-4">{{fs_char_weight}}: </div> <div class="col-xs-2">{{ weight }}</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4">{{fs_char_age}}: </div><div class="col-xs-2">{{ age }}</div>
+			<div class="col-xs-4">{{fs_char_height}}: </div><div class="col-xs-2">{{ height }}</div>
+		</div>
 		{{/inModification}}
 		{{#inModification}}
 			<form name="datiAnagraficiForm" method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
-				{{fs_char_name}}: <input name="name" value="{{ name }}"></input>
-				{{fs_char_sex}}:
-				<select name="sex" id="sex">
+			<div class="row">
+				<div class="col-xs-4">{{fs_char_name}}: </div><div class="col-xs-8"><input id="name" value="{{ name }}"></input></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-2">{{fs_char_sex}}: </div>
+				<div class="col-xs-4">
+				<select id="sex">
 					{{#sexOptions}}
 						<option name="{{key}}" {{selected}}>{{value}}</option>
 					{{/sexOptions}}
 				</select>
-				{{fs_char_weight}}: <input name="weight" value="{{ weight }}"></input>
-				<br>
-				{{fs_char_age}}: <input name="age" value="{{ age }}"></input>
-				{{fs_char_height}}: <input name="height" value="{{ height }}"></input>
-				<button onclick="HealthCare.switchUpdateDatiAnagrafici(false);">{{cancelButton}}</button>
-				<button type="submit">{{modifyButton}}</button>
+				</div>
+				<div class="col-xs-4">{{fs_char_weight}}: </div><div class="col-xs-2"><input id="weight" value="{{ weight }}"></input></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-4">{{fs_char_age}}: </div><div class="col-xs-2"><input id="age" value="{{ age }}"></input></div>
+				<div class="col-xs-4">{{fs_char_height}}: </div><div class="col-xs-2"><input id="height" value="{{ height }}"></input></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6"><button onclick="HealthCare.switchUpdateDatiAnagrafici(false);return false;">{{cancelButton}}</button></div>
+				<div class="col-xs-6"><button type="submit">{{modifyButton}}</button></div>
 			</form>
 		{{/inModification}}
 	{{/datiAnagrafici}}

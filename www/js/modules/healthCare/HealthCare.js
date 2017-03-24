@@ -123,19 +123,9 @@ var HealthCare = {
             HealthCare.hide();
         }
     },
-	
-    refreshMenuPosition: function () {
-        if (HealthCare.open) {
-            MapManager.showMenuReduceMap("#" + HealthCare.idMenu);
-            Utility.checkAxisToDrag("#" + HealthCare.idMenu);
-            if (HealthCare.expanded) {
-                HealthCare.expandBusRoutesMenu();
-            }
-        }
-    },
-	
     refreshMenu: function () {
         if ($("#" + HealthCare.idMenu).length == 0) {
+			console.log("Appende div HealthCare.idMenu");
             $("#indexPage").
                 append("<div id=\"" + HealthCare.idMenu + "\" class=\"commonHalfMenu\"></div>")
         }
@@ -150,6 +140,7 @@ var HealthCare = {
 		*/
         Utility.movingPanelWithTouch("#" + HealthCare.idMenu + "ExpandHandler",
             "#" + HealthCare.idMenu);
+		console.log("HealthCare.expanded: " + HealthCare.expanded);
         if (HealthCare.expanded) {
             $("#" + HealthCare.idMenu + "Expand").hide();
         } else {
@@ -261,26 +252,38 @@ var HealthCare = {
 		HealthCare.refreshMenu();
 	},
 	updateDatiAnagrafici: function() {
-		localStorage.setItem("name", document.datiAnagraficiForm.name.value);
-		localStorage.setItem("sex", document.datiAnagraficiForm.sex.value);
-		localStorage.setItem("weight", document.datiAnagraficiForm.weight.value);
-		localStorage.setItem("age", document.datiAnagraficiForm.age.value);
-		localStorage.setItem("height", document.datiAnagraficiForm.height.value);
+		localStorage.setItem("name", $("#name").val());
+		localStorage.setItem("sex", $("#sex").val());
+		localStorage.setItem("weight", $("#weight").val());
+		localStorage.setItem("age", $("#age").val());
+		localStorage.setItem("height", $("#height").val());
 		
 		HealthCare.loadDatiAnagrafici();
         
 		HealthCare.switchUpdateDatiAnagrafici(false);
 	},
 	getHint: function() {
-        var actionQuery = QueryManager.createRetrieveActionsQuery();
+        //var actionQuery = QueryManager.createRetrieveActionsQuery();
+		var actionQuery = "getHint";
 		console.log("actionQuery: " + actionQuery);
 		HealthCare.hint = "Informazione non ricevuta";
 		HealthCare.refreshMenu();
-        //APIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
+        appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
 	successQueryAction: function (response) {
 		//console.log("dbg030: " + response);
         HealthCare.hint = response;
 		HealthCare.refreshMenu();
     },
+}
+
+var appoAPIClient = {
+	executeQuery: function(actionQuery, successQueryAction, errorQuery) {
+		if (actionQuery === "getHint") {
+			successQueryAction( "Utilizza le scale ogni volta sia possibile");
+		}
+		else {
+			errorQuery("Unknown action");
+		}
+	}
 }
