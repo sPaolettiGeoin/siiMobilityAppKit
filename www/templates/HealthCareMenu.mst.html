@@ -67,4 +67,14 @@
 	<legend>{{hints}}</legend>
 	{{hint}}
 	</fieldset>
+	<fieldset>
+	<legend>{{healthAction}}</legend>
+	<select id="sex" onchange="HealthCare.loadHealthAction();">
+		<option name=""></option>
+		{{#healthOptions}}
+			<option name="{{key}}" {{selected}}>{{value}}</option>
+		{{/healthOptions}}
+	</select>
+	{{healthHint}}
+	</fieldset>
 </div>

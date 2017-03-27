@@ -28,6 +28,7 @@ var HealthCare = {
 	modifyButton: "",
 	hints: "",
 	hint: "",
+	healthOptions: [],
     pathPoints: [ ],
     lastSelected: null,
     curDestPointQuery: 1,
@@ -56,6 +57,7 @@ var HealthCare = {
 		HealthCare.cancelButton = Globalization.labels.healthCareMenu.popupCancelLabel;
 		HealthCare.modifyButton = Globalization.labels.healthCareMenu.modifyButton;
 		HealthCare.hints = Globalization.labels.healthCareMenu.hints;
+		HealthCare.healthAction = Globalization.labels.healthCareMenu.healthAction;
         //HealthCare.startPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/FirstStopOfRoute.png', "classic");
         //HealthCare.destPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/LastStopOfRoute.png', "classic");
         
@@ -63,6 +65,7 @@ var HealthCare = {
         HealthCare.show();
 		
 		HealthCare.getHint();
+		HealthCare.getHealthOptions();
         //GpsManager.stopWatchingPosition();
         //MapManager.removeAndUpdatePopUpGpsMarker();
 		/*
@@ -125,11 +128,9 @@ var HealthCare = {
     },
     refreshMenu: function () {
         if ($("#" + HealthCare.idMenu).length == 0) {
-			console.log("Appende div HealthCare.idMenu");
-            $("#indexPage").
+			$("#indexPage").
                 append("<div id=\"" + HealthCare.idMenu + "\" class=\"commonHalfMenu\"></div>")
         }
-		//console.log("dbg020");
 		
         ViewManager.render(HealthCare, "#" + HealthCare.idMenu, "HealthCareMenu");
 		/*
@@ -265,22 +266,42 @@ var HealthCare = {
 	getHint: function() {
         //var actionQuery = QueryManager.createRetrieveActionsQuery();
 		var actionQuery = "getHint";
-		console.log("actionQuery: " + actionQuery);
-		HealthCare.hint = "Informazione non ricevuta";
-		HealthCare.refreshMenu();
-        appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
+		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
-	successQueryAction: function (response) {
-		//console.log("dbg030: " + response);
-        HealthCare.hint = response;
+	getHealthOptions: function() {
+        //var actionQuery = QueryManager.createRetrieveActionsQuery();
+		var actionQuery = "getHealthOptions";
+		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
+    },
+	loadHealthAction: function() {
+		HealthCare.healthHint = $(this).find('option:selected').val();
+		//$(this).find('option:selected').val();
+		HealthCare.refreshMenu();
+	},
+	successQueryAction: function (actionQuery, response) {
+		if (actionQuery === "getHint") {
+			HealthCare.hint = response;
+		}
+		else if (actionQuery === "getHealthOptions") {
+			HealthCare.healthOptions = response;
+		}
 		HealthCare.refreshMenu();
     },
 }
 
 var appoAPIClient = {
+	hints: ["Utilizza le scale ogni volta sia possibile", "Usi sempre l'auto e fai poco moto. Lo sai che camminando 10 minuti ogni giorno consumi 100 calorie?"],
+	healthOptions: [
+					{key: "loss_weigth", value: "Perdere peso"},
+					{key: "walk_more", value: "Camminare di più"}
+					],
 	executeQuery: function(actionQuery, successQueryAction, errorQuery) {
 		if (actionQuery === "getHint") {
-			successQueryAction( "Utilizza le scale ogni volta sia possibile");
+			var randomHintIndex = Math.floor((Math.random() * this.hints.length));
+			successQueryAction(actionQuery, this.hints[randomHintIndex]);
+		}
+		else if (actionQuery === "getHealthOptions") {
+			successQueryAction(actionQuery, this.healthOptions);
 		}
 		else {
 			errorQuery("Unknown action");
