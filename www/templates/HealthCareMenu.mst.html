@@ -3,58 +3,59 @@
         <div class="grippy grippy-horizontal"></div>
     </div>
     <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
-        <a class="pull-right" onclick="HealthCare.hide();">
-            <i class="glyphicon glyphicon-remove"
-               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
-        </a>
-        <a id="healthCareMenuExpand" class="pull-left" onclick="HealthCare.expandHealthCare();">
-            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
-        </a>
-        <a id="healthCareMenuCollapse" class="pull-left" onclick="HealthCare.collapseHealthCare();">
-            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
-        </a>
         <b style="line-height: 52px;color: #333;">{{menuHeaderTitle}}</b>
     </div>
 </div>
 
 <div id="healthCareMenuInner" class="commonHalfMenuInner">
     {{ datiAnagrafici.name }}
-	<fieldset>
-	<legend>{{fieldset_characteristics}}
-	<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
-				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
-			</a>
-	</legend>
+	<div class="panel-heading">{{fieldset_characteristics}}</div>
+	<div class="panel-body">
 	{{#datiAnagrafici}}
 		{{^inModification}}
 		<div class="row">
-			<div class="col-xs-2">{{fs_char_sex}}: </div><div class="col-xs-4"> {{ sex }}</div>
-			<div class="col-xs-4">{{fs_char_weight}}: </div> <div class="col-xs-2">{{ weight }}</div>
+			<div class="col-xs-6">{{fs_char_sex}}: </div><div class="col-xs-6"> {{ sex }}</div>
 		</div>
 		<div class="row">
-			<div class="col-xs-4">{{fs_char_age}}: </div><div class="col-xs-2">{{ age }}</div>
-			<div class="col-xs-4">{{fs_char_height}}: </div><div class="col-xs-2">{{ height }}</div>
+			<div class="col-xs-6">{{fs_char_weight}}: </div> <div class="col-xs-6">{{ weight }}</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_age}}: </div><div class="col-xs-6">{{ age }}</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_height}}: </div><div class="col-xs-6">{{ height }}</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
+					<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
+				</a>
+			</div>
 		</div>
 		{{/inModification}}
 		{{#inModification}}
 			<form name="datiAnagraficiForm" method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
 			<div class="row">
-				<div class="col-xs-4">{{fs_char_name}}: </div><div class="col-xs-8"><input id="name" value="{{ name }}"></input></div>
+				<div class="col-xs-6">{{fs_char_name}}: </div><div class="col-xs-6"><input id="name" value="{{ name }}"></input></div>
 			</div>
 			<div class="row">
-				<div class="col-xs-2">{{fs_char_sex}}: </div>
-				<div class="col-xs-4">
+				<div class="col-xs-6">{{fs_char_sex}}: </div>
+				<div class="col-xs-6">
 				<select id="sex">
 					{{#sexOptions}}
 						<option name="{{key}}" {{selected}}>{{value}}</option>
 					{{/sexOptions}}
 				</select>
 				</div>
-				<div class="col-xs-4">{{fs_char_weight}}: </div><div class="col-xs-2"><input id="weight" value="{{ weight }}"></input></div>
 			</div>
 			<div class="row">
-				<div class="col-xs-4">{{fs_char_age}}: </div><div class="col-xs-2"><input id="age" value="{{ age }}"></input></div>
-				<div class="col-xs-4">{{fs_char_height}}: </div><div class="col-xs-2"><input id="height" value="{{ height }}"></input></div>
+				<div class="col-xs-6">{{fs_char_weight}}: </div><div class="col-xs-6"><input id="weight" value="{{ weight }}"></input></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6">{{fs_char_age}}: </div><div class="col-xs-6"><input id="age" value="{{ age }}"></input></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6">{{fs_char_height}}: </div><div class="col-xs-6"><input id="height" value="{{ height }}"></input></div>
 			</div>
 			<div class="row">
 				<div class="col-xs-6"><button onclick="HealthCare.switchUpdateDatiAnagrafici(false);return false;">{{cancelButton}}</button></div>
@@ -62,19 +63,21 @@
 			</form>
 		{{/inModification}}
 	{{/datiAnagrafici}}
-	</fieldset>
-	<fieldset>
-	<legend>{{hints}}</legend>
+	</div>
+	<div class="panel-heading">{{hints}}</div>
+	<div class="panel-body">
 	{{hint}}
-	</fieldset>
-	<fieldset>
-	<legend>{{healthAction}}</legend>
-	<select id="sex" onchange="HealthCare.loadHealthAction();">
-		<option name=""></option>
+	</div>
+	<div class="panel-heading">{{healthAction}}</div>
+	<div class="panel-body">
+	<form>
+	<select id="healthActions" onchange="HealthCare.loadHealthAction();">
+		<option></option>
 		{{#healthOptions}}
-			<option name="{{key}}" {{selected}}>{{value}}</option>
+			<option value="{{key}}" {{selected}}>{{value}}</option>
 		{{/healthOptions}}
 	</select>
+	</form>
 	{{healthHint}}
-	</fieldset>
+	</div>
 </div>
