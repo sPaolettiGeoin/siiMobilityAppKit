@@ -9,8 +9,8 @@ var HealthCare = {
 		sexOptions: function() {
 			var options = [];
 			options.length = 2;
-			options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === Globalization.labels.healthCareMenu.options_sex_M ? "selected" : ""};
-			options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === Globalization.labels.healthCareMenu.options_sex_F ? "selected" : ""};
+			options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === "M" ? "selected" : ""};
+			options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === "F" ? "selected" : ""};
 			return options;
 		}
 	},
@@ -27,7 +27,7 @@ var HealthCare = {
 	hint: "",
 	healthOptions: [],
 	init: function() {
-        HealthCare.menuHeaderTitle = Globalization.labels.healthCareMenu.title;
+		HealthCare.menuHeaderTitle = Globalization.labels.healthCareMenu.title;
 		HealthCare.fieldset_characteristics = Globalization.labels.healthCareMenu.characteristics;
 		HealthCare.fs_char_name = Globalization.labels.healthCareMenu.name;
 		HealthCare.fs_char_sex = Globalization.labels.healthCareMenu.sex;
@@ -142,7 +142,8 @@ var HealthCare = {
 		HealthCare.switchUpdateDatiAnagrafici(false);
 	},
 	getHint: function() {
-        var actionQuery = "getHint";
+        var actionQuery = "/recommender/health/";
+		actionQuery += "?" + HealthCare.componeDataQuery();
 		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
 	getHealthOptions: function() {
@@ -154,74 +155,33 @@ var HealthCare = {
 		for (var indx = 0; indx < HealthCare.healthOptions.length; indx++) {
 			HealthCare.healthOptions[indx].selected = HealthCare.healthOptions[indx].key === selectedOption.val() ? "selected" : "";
 		}
-		var actionQuery = "getHealthGoal?goal=" + selectedOption.val();
+		var actionQuery = "/recommender/healthgoals/";
+		actionQuery += "?goal=" + selectedOption.val();
+		actionQuery += "&" + HealthCare.componeDataQuery();
 		//console.log("actionQuery: " + actionQuery);
 		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
 		//HealthCare.refreshMenu();
 	},
+	componeDataQuery: function() {
+		var dataQuery = "userid=" + "666";
+		dataQuery += "&sex=" + HealthCare.datiAnagrafici.sex;
+		dataQuery += "&weight=" + HealthCare.datiAnagrafici.weight;
+		dataQuery += "&age=" + HealthCare.datiAnagrafici.age;
+		dataQuery += "&height=" + HealthCare.datiAnagrafici.height;
+		
+		return dataQuery;
+	},
 	successQueryAction: function (actionQuery, response) {
-		if (actionQuery === "getHint") {
+		if (actionQuery === "/recommender/health/") {
 			HealthCare.hint = response;
 		}
 		else if (actionQuery === "getHealthOptions") {
 			HealthCare.healthOptions = response;
 		}
-		else if (actionQuery === "getHealthGoal") {
+		else if (actionQuery === "/recommender/healthgoals/") {
 			HealthCare.healthHint = response;
 		}
 		
 		HealthCare.refreshMenu();
     },
-}
-
-var appoAPIClient = {
-	hints: ["Utilizza le scale ogni volta sia possibile", "Usi sempre l'auto e fai poco moto. Lo sai che camminando 10 minuti ogni giorno consumi 100 calorie?"],
-	healthOptions: [
-					{key: "loss_weigth", value: "Perdere peso"},
-					{key: "walk_more", value: "Camminare di più"}
-					],
-	executeQuery: function(actionQuery, successQueryAction, errorQuery) {
-		//console.log("actionQuery: " + actionQuery);
-		//console.log("actionQuery.split('?')[0]: " + actionQuery.split("?")[0]);
-		if (actionQuery === "getHint") {
-			var randomHintIndex = Math.floor((Math.random() * this.hints.length));
-			successQueryAction(actionQuery, this.hints[randomHintIndex]);
-		}
-		else if (actionQuery === "getHealthOptions") {
-			successQueryAction(actionQuery, this.healthOptions);
-		}
-		else if (actionQuery.split("?")[0] === "getHealthGoal") {
-			var healthGoal = appoAPIClient.getParameterFromPath(actionQuery, "goal");
-			//console.log("healthGoal: " + healthGoal);
-			if (healthGoal === "loss_weigth") {
-				successQueryAction(actionQuery.split("?")[0], "Porta fuori il cane");
-			}
-			else if (healthGoal === "walk_more") {
-				successQueryAction(actionQuery.split("?")[0], "Invece di prendere l'auto per andare a lavoro, prendi l'autobus a soli 800 metri da casa. La linea 6 ti porta a 500 metri dal lavoro e camminerai per 20 minuti al giorno.");
-			}
-			else {
-				errorQuery("Unknown healthGoal");
-			}
-		}
-		else {
-			errorQuery("Unknown action");
-		}
-	},
-	getParameterFromPath: function(url, paramName) {
-		var value = null;
-		if (url != null && url.indexOf("?") > -1) {
-			var queryString = url.split("?")[1];
-			var paramsPairs = queryString.split("&");
-			var paramsPair;
-			for (var indx = 0; indx < paramsPairs.length; indx++) {
-				if (paramsPairs[indx].indexOf("=") > -1) {
-					paramsPair = paramsPairs[indx].split("=");
-					if (paramsPair[0] == paramName) {
-						value = paramsPair[1];
-					}
-				}
-			}
-		}
-		return value;
-	}
 }
