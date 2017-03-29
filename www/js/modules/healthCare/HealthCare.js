@@ -77,15 +77,10 @@ var HealthCare = {
         }
 		
         ViewManager.render(HealthCare, "#" + HealthCare.idMenu, "HealthCareMenu");
-		/*
-        for (var point of HealthCare.pathPoints) {
-            console.log(point.name);
-            ViewManager.render(point, "#healthCareMenu" + point.name, "HealthCareMenu");
-        }
-		*/
+		
         Utility.movingPanelWithTouch("#" + HealthCare.idMenu + "ExpandHandler",
             "#" + HealthCare.idMenu);
-		console.log("HealthCare.expanded: " + HealthCare.expanded);
+		
         if (HealthCare.expanded) {
             $("#" + HealthCare.idMenu + "Expand").hide();
         } else {
@@ -121,6 +116,13 @@ var HealthCare = {
 	loadDatiAnagrafici: function() {
 		HealthCare.datiAnagrafici.name = localStorage.getItem("name");
 		HealthCare.datiAnagrafici.sex = localStorage.getItem("sex");
+		if (HealthCare.datiAnagrafici.sex === "M") {
+			HealthCare.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_M;
+		}
+		else if (HealthCare.datiAnagrafici.sex === "F") {
+			HealthCare.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_F;
+		}
+		
 		HealthCare.datiAnagrafici.weight = localStorage.getItem("weight");
 		HealthCare.datiAnagrafici.age = localStorage.getItem("age");
 		HealthCare.datiAnagrafici.height = localStorage.getItem("height");
@@ -171,15 +173,26 @@ var HealthCare = {
 		
 		return dataQuery;
 	},
-	successQueryAction: function (actionQuery, response) {
-		if (actionQuery === "/recommender/health/") {
-			HealthCare.hint = response;
+	successQueryAction: function (actionQuery, data) {
+		var dataObj = JSON.parse(data);
+		var response = dataObj;
+		if (response && response.response && response.response.error_code === "0") {
+			if (actionQuery === "/recommender/health/") {
+				HealthCare.hint = response.hint;
+			}
+			else if (actionQuery === "getHealthOptions") {
+				HealthCare.healthOptions = response.responseObject;
+			}
+			else if (actionQuery === "/recommender/healthgoals/") {
+				HealthCare.healthHint = response.hint;
+				
+				if (response.needMap && response.needMap == "true") {
+					HealthCare.collapseHealthCare();
+				}
+			}
 		}
-		else if (actionQuery === "getHealthOptions") {
-			HealthCare.healthOptions = response;
-		}
-		else if (actionQuery === "/recommender/healthgoals/") {
-			HealthCare.healthHint = response;
+		else {
+			console.log("response: " + response);
 		}
 		
 		HealthCare.refreshMenu();

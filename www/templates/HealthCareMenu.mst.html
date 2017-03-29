@@ -10,55 +10,60 @@
 	<div class="panel-body">
 	{{#datiAnagrafici}}
 		{{^inModification}}
-		<div class="row">
-			<div class="col-xs-6">{{fs_char_sex}}: </div><div class="col-xs-6"> {{ sex }}</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-6">{{fs_char_weight}}: </div> <div class="col-xs-6">{{ weight }}</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-6">{{fs_char_age}}: </div><div class="col-xs-6">{{ age }}</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-6">{{fs_char_height}}: </div><div class="col-xs-6">{{ height }}</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
-					<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
-				</a>
-			</div>
+		<div class="col-xs-12">
+			<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
+				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
+			</a>
 		</div>
 		{{/inModification}}
-		{{#inModification}}
+		
 			<form name="datiAnagraficiForm" method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
+			{{#inModification}}
 			<div class="row">
 				<div class="col-xs-6">{{fs_char_name}}: </div><div class="col-xs-6"><input id="name" value="{{ name }}"></input></div>
 			</div>
+			{{/inModification}}
 			<div class="row">
 				<div class="col-xs-6">{{fs_char_sex}}: </div>
 				<div class="col-xs-6">
+				{{^inModification}}{{ sexDescr }}{{/inModification}}
+				{{#inModification}}
 				<select id="sex">
 					{{#sexOptions}}
 						<option value="{{key}}" {{selected}}>{{value}}</option>
 					{{/sexOptions}}
 				</select>
+				{{/inModification}}
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-xs-6">{{fs_char_weight}}: </div><div class="col-xs-6"><input id="weight" value="{{ weight }}"></input></div>
+				<div class="col-xs-6">{{fs_char_weight}}: </div>
+				<div class="col-xs-6">
+				{{^inModification}}{{ weight }}{{/inModification}}
+				{{#inModification}}<input id="weight" value="{{ weight }}"></input>{{/inModification}}
+				</div>
 			</div>
 			<div class="row">
-				<div class="col-xs-6">{{fs_char_age}}: </div><div class="col-xs-6"><input id="age" value="{{ age }}"></input></div>
+				<div class="col-xs-6">{{fs_char_age}}: </div>
+				<div class="col-xs-6">
+				{{^inModification}}{{ age }}{{/inModification}}
+				{{#inModification}}<input id="age" value="{{ age }}"></input>{{/inModification}}
+				</div>
 			</div>
 			<div class="row">
-				<div class="col-xs-6">{{fs_char_height}}: </div><div class="col-xs-6"><input id="height" value="{{ height }}"></input></div>
+				<div class="col-xs-6">{{fs_char_height}}: </div>
+				<div class="col-xs-6">
+				{{^inModification}}{{ height }}{{/inModification}}
+				{{#inModification}}<input id="height" value="{{ height }}"></input>{{/inModification}}
+				</div>
 			</div>
+			{{#inModification}}
 			<div class="row">
 				<div class="col-xs-6"><button onclick="HealthCare.switchUpdateDatiAnagrafici(false);return false;">{{cancelButton}}</button></div>
 				<div class="col-xs-6"><button type="submit">{{modifyButton}}</button></div>
+			</div>
+			{{/inModification}}
 			</form>
-		{{/inModification}}
 	{{/datiAnagrafici}}
 	</div>
 	<div class="panel-heading">{{hints}}</div>
