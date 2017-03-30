@@ -166,17 +166,27 @@ var HealthCare = {
 		//HealthCare.refreshMenu();
 	},
 	componeDataQuery: function() {
-		var dataQuery = "userid=" + "666";
-		dataQuery += "&sex=" + HealthCare.datiAnagrafici.sex;
+		var dataQuery = "sex=" + HealthCare.datiAnagrafici.sex;
 		dataQuery += "&weight=" + HealthCare.datiAnagrafici.weight;
 		dataQuery += "&age=" + HealthCare.datiAnagrafici.age;
 		dataQuery += "&height=" + HealthCare.datiAnagrafici.height;
+		dataQuery += "&lang=" + SettingsManager.language;
+		dataQuery += "&uid=" + QueryManager.uid;
 		
 		return dataQuery;
 	},
 	successQueryAction: function (responseJson) {
 		var response = JSON.parse(responseJson);
 		if (response && response.status && response.status.error_code === 0) {
+			console.log("typeof response.data.journey: " + typeof response.data.journey);
+			HealthCare.showMap = typeof response.data.journey != "undefined";
+			console.log("HealthCare.showMap: " + HealthCare.showMap);
+			if (HealthCare.showMap) {
+				HealthCare.collapseHealthCare();
+			}
+			else {
+				HealthCare.expandHealthCare();
+			}
 			var actionQuery = response.status.current_operation;
 			if (actionQuery === "/recommender/health/") {
 				HealthCare.hint = response.data.hint;
@@ -189,9 +199,6 @@ var HealthCare = {
 				
 				if (response.data.journey) {
 					MapManager.addSelectedGeometry(response.data.journey.wkt);
-					HealthCare.collapseHealthCare();
-					HealthCare.showMap = true;
-					HealthCare.refreshMenu();
 				}
 			}
 		}
