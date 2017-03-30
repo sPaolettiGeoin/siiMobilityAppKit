@@ -16,6 +16,7 @@ var HealthCare = {
 	},
 	open: false,
     expanded: false,
+	showMap: false,
     varName: "HealthCare",
     idMenu: "healthCareMenu",
     menuHeaderTitle: "",
@@ -173,21 +174,24 @@ var HealthCare = {
 		
 		return dataQuery;
 	},
-	successQueryAction: function (actionQuery, data) {
-		var dataObj = JSON.parse(data);
-		var response = dataObj;
-		if (response && response.response && response.response.error_code === "0") {
+	successQueryAction: function (responseJson) {
+		var response = JSON.parse(responseJson);
+		if (response && response.status && response.status.error_code === 0) {
+			var actionQuery = response.status.current_operation;
 			if (actionQuery === "/recommender/health/") {
-				HealthCare.hint = response.hint;
+				HealthCare.hint = response.data.hint;
 			}
 			else if (actionQuery === "getHealthOptions") {
-				HealthCare.healthOptions = response.responseObject;
+				HealthCare.healthOptions = response.data.options;
 			}
 			else if (actionQuery === "/recommender/healthgoals/") {
-				HealthCare.healthHint = response.hint;
+				HealthCare.healthHint = response.data.hint;
 				
-				if (response.needMap && response.needMap == "true") {
+				if (response.data.journey) {
+					MapManager.addSelectedGeometry(response.data.journey.wkt);
 					HealthCare.collapseHealthCare();
+					HealthCare.showMap = true;
+					HealthCare.refreshMenu();
 				}
 			}
 		}
