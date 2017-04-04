@@ -150,7 +150,7 @@ var HealthCare = {
 		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
 	getHealthOptions: function() {
-        var actionQuery = "getHealthOptions";
+        var actionQuery = "/recommender/healthgoals_all";
 		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
     },
 	loadHealthAction: function() {
@@ -161,7 +161,6 @@ var HealthCare = {
 		var actionQuery = "/recommender/healthgoals/";
 		actionQuery += "?goal=" + selectedOption.val();
 		actionQuery += "&" + HealthCare.componeDataQuery();
-		//console.log("actionQuery: " + actionQuery);
 		appoAPIClient.executeQuery(actionQuery, HealthCare.successQueryAction, HealthCare.errorQuery);
 		//HealthCare.refreshMenu();
 	},
@@ -176,6 +175,7 @@ var HealthCare = {
 		return dataQuery;
 	},
 	successQueryAction: function (responseJson) {
+		console.log("responseJson: " + responseJson);
 		var response = JSON.parse(responseJson);
 		if (response && response.status && response.status.error_code === 0) {
 			console.log("typeof response.data.journey: " + typeof response.data.journey);
@@ -191,7 +191,7 @@ var HealthCare = {
 			if (actionQuery === "/recommender/health/") {
 				HealthCare.hint = response.data.hint;
 			}
-			else if (actionQuery === "getHealthOptions") {
+			else if (actionQuery === "/recommender/healthgoals_all") {
 				HealthCare.healthOptions = response.data.options;
 			}
 			else if (actionQuery === "/recommender/healthgoals/") {

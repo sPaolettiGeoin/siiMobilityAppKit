@@ -3,7 +3,7 @@ var appoAPIClient = {
 	healthOptions: [{"key": "lose_weight", "value": "Perdere peso"},
 					{"key": "walk_more", "value": "Camminare di piu'"}],
 	executeQuery: function(actionQuery, successQueryAction, errorQuery) {
-		//console.log("actionQuery: " + actionQuery);
+		console.log("actionQuery: " + actionQuery);
 		//console.log("actionQuery.split('?')[0]: " + actionQuery.split("?")[0]);
 		var action;
 		var params = null;
@@ -11,7 +11,6 @@ var appoAPIClient = {
 			var sections = actionQuery.split("?");
 			action = sections[0];
 			params = sections[1];
-			console.log("params: " + params);
 		}
 		else {
 			action = actionQuery;
@@ -30,7 +29,7 @@ var appoAPIClient = {
 			var randomHintIndex = Math.floor((Math.random() * this.hints.length));
 			response.data.hint = this.hints[randomHintIndex];
 		}
-		else if (action === "getHealthOptions") {
+		else if (action === "/recommender/healthgoals_all") {
 			response.data.options = this.healthOptions;
 		}
 		else if (action === "/recommender/healthgoals/") {
