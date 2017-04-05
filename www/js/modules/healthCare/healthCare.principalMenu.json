@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "callback": "PrincipalMenu.hide();HealthCare.init();",
@@ -21,4 +22,29 @@
     "removed": false,
     "index": 0
   }
+=======
+[
+  {
+    "callback": "PrincipalMenu.hide();HealthCare.init();",
+    "iconId": "",
+    "iconClass": "glyphicon glyphicon-heart",
+    "iconFontSize": "35px",
+    "iconColor": "#660000",
+    "imgSrc": "",
+    "imgHeight": "",
+    "text": "",
+    "textFontSize": "38px",
+    "textColor": "#CC0000",
+    "captionId": "principalMenuHealthCare",
+    "captionTextId": "moduleHealthCare",
+    "step": "",
+    "stepId": "",
+    "ribbon": true,
+    "ribbonId": "",
+    "ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+    "ribbonText":  "NEW",
+    "removed": false,
+    "index": 0
+  }
+>>>>>>> d9c3b9e8d7c0865097974f680eb04ce351fd38b4
 ]

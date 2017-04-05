@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "principalMenu": {
     "modulePathFinder": "Tieniti in forma"
@@ -6,3 +7,13 @@
     "title": "Tieniti in forma"
   }
 }
+=======
+{
+  "principalMenu": {
+    "modulePathFinder": "Tieniti in forma"
+  },
+  "pathFinderMenu": {
+    "title": "Tieniti in forma"
+  }
+}
+>>>>>>> d9c3b9e8d7c0865097974f680eb04ce351fd38b4
