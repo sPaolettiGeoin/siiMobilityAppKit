@@ -68,18 +68,11 @@ var QueryManager = {
         } else {
             QueryManager.profile = QueryManager.defaultProfile;
         }
-        application.uid = forge_sha256(device.uuid);
         QueryManager.uid = application.uid;
         QueryManager.uid2 = application.uid2
         QueryManager.appID = application.appID;
         QueryManager.version = application.version;
 
-    },
-
-    // routetype only "feet"
-    createShortestPathQuery: function(sourceCoordinates, destCoordinates, routeType, requestFrom, start) {
-        return "shortestpath/?source=" + sourceCoordinates.join(";") + "&destination=" + destCoordinates.join(";") + "&startDatetime=" + start + 
-            "&routeType=" + routeType + "&requestFrom=" + requestFrom + "&uid=" + QueryManager.uid + "&lang=" + QueryManager.language;
     },
 
     createRetrieveActionsQuery: function () {
