@@ -1,5 +1,22 @@
 <div id="healthCareMenuHeader" class="panel panel-default" style="position: absolute;right: 0px;left: 0px;border-radius: 0px;">
+	{{#showMap}}
+    <div id="healthCareMenuExpandHandler" class="grippyContainer grippyContainer-horizontal" style="text-align: center;">
+        <div class="grippy grippy-horizontal"></div>
+    </div>
+	{{/showMap}}
     <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
+		{{#showMap}}
+        <a class="pull-right" onclick="HealthCare.hide();">
+            <i class="glyphicon glyphicon-remove"
+               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="healthCareMenuExpand" class="pull-left" onclick="HealthCare.expandHealthCare();">
+            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a id="healthCareMenuCollapse" class="pull-left" onclick="HealthCare.collapseHealthCare();">
+            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+		{{/showMap}}
         <b style="line-height: 52px;color: #333;">{{menuHeaderTitle}}</b>
     </div>
 </div>
