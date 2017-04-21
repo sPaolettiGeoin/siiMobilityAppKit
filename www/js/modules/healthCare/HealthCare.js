@@ -170,7 +170,7 @@ var HealthCare = {
 		dataQuery += "&age=" + HealthCare.datiAnagrafici.age;
 		dataQuery += "&height=" + HealthCare.datiAnagrafici.height;
 		dataQuery += "&lang=" + SettingsManager.language;
-		dataQuery += "&uid=" + QueryManager.uid;
+		dataQuery += "&uid=" + application.uid;
 		
 		return dataQuery;
 	},

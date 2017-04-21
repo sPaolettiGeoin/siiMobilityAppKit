@@ -30,8 +30,13 @@ var APIClient = {
     executeQuery: function(query, successCallback, errorCallback) {
         if (query != null && successCallback != null) {
             if (!APIClient.lockQuery) {
-                if (application.checkConnection()) {
-                    console.log(APIClient.apiUrl + query);
+				if (!application.checkConnection()) {
+					navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
+                }
+				else if (application.uid == null) {
+					//Not yet fully loaded?
+				}
+				else {
                     $.ajax({
                         url: encodeURI(APIClient.apiUrl + query),
                         timeout: Parameters.timeoutGetQuery,
@@ -53,9 +58,7 @@ var APIClient = {
                             Loading.hide();
                         }
                     });
-                } else {
-                    navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
-                }
+				}
             } else {
                 APIClient.showOperationRunning();
             }
@@ -136,7 +139,7 @@ var APIClient = {
         
 
         var params = {};
-        params.uid = QueryManager.uid;
+        params.uid = application.uid;
         params.serviceUri = serviceUri;
         options.params = params;
         if (photoUrl.substring(photoUrl.lastIndexOf(".") + 1) == "jpg") {
