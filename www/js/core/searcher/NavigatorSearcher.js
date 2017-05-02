@@ -127,6 +127,7 @@ var NavigatorSearcher = {
     	MapManager.addNavigationButtons();
     	MapManager.activate3d();
     	MapManager.disabling3d();
+		//console.log("dbg080");
     	application.resetInterface();
     	$("#dropdownThreeVertical").removeClass('open');
     	$("#navigationMode").html(Globalization.labels.navigatiorSearcherBar.navigationMode);

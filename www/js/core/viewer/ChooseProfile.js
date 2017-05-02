@@ -1,59 +1,49 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var ChooseProfile = {
+(function() {
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('ChooseProfile', ChooseProfile)
+	
+	ChooseProfile.$inject = ['RelativePath', 'SiiMobilityService'];
+	function ChooseProfile(RelativePath, SiiMobilityService) {
+		//console.log("dbg050: " + SiiMobilityService);
+		var service = {};
 
-    open: false,
+		service.open = false;
+		service.show = show;
+		service.hide = hide;
+		service.checkForBackButton = checkForBackButton;
+		
+		return service;
 
-    show: function () {
-        if ($("#chooseProfile").length == 0) {
-            $("#indexPage").append("<div id=\"chooseProfile\"></div>")
-        }
-        $.ajax({
-            url: RelativePath.profiles + "profiles." + SettingsManager.language + ".json",
-            async: false,
-            dataType: "json",
-            success: function(data) {
-                ViewManager.render(data, '#chooseProfile', 'ChooseProfile');
-            }
-        });
+		function show (language) {
+			//console.log("dbg440");
 
-        $('#chooseProfile').show();
-        ChooseProfile.open = true;
-        application.addingMenuToCheck("ChooseProfile");
-    },
+			$('#chooseProfile').show();
+			ChooseProfile.open = true;
+			//console.log("dbg090: " + SiiMobilityService);
+			SiiMobilityService.addingMenuToCheck("ChooseProfile");
+			//console.log("dbg092: " + SiiMobilityService);
+		}
 
-    hide: function() {
-        $('#chooseProfile').hide();
-        localStorage.setItem("acceptInformation", true);
-        localStorage.setItem("appVersion", application.version);
-        ChooseProfile.open = false;
-        application.removingMenuToCheck("ChooseProfile");
-        application.startingApp();
-    },
+		function hide() {
+			$('#chooseProfile').hide();
+			localStorage.setItem("acceptInformation", true);
+			//console.log("dbg200");
+			localStorage.setItem("appVersion", SiiMobilityService.version);
+			ChooseProfile.open = false;
+			SiiMobilityService.removingMenuToCheck("ChooseProfile");
+			//SiiMobilityService.startingApp();
+		}
 
-    checkForBackButton: function () {
-        if (ChooseProfile.open) {
-            ChooseProfile.hide();
-            ChooseLanguage.show();
-        }
-    }
-}
+		function checkForBackButton () {
+			//console.log("dbg700");
+			var service = this;
+			if (service.open) {
+				service.hide();
+				ChooseLanguage.show();
+			}
+		}
+	}
+})();

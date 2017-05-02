@@ -30,6 +30,7 @@ var Information = {
         ViewManager.render(null, '#information', 'Information');
         $('#information').show();
         Information.open = true;
+		//console.log("dbg220");
         application.addingMenuToCheck("Information");
         application.setBackButtonListener();
     },

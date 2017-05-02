@@ -99,6 +99,7 @@ var EventsSearcher = {
 
     //callBack
     successQuery: function(response) {
+		//console.log("dbg620");
         var arrayToAvoidDuplicateEvents = [];
         if (response.Event.features.length != 0) {
             for (var i = 0; i < response.Event.features.length; i++) {

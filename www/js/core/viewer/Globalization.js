@@ -1,143 +1,175 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var Globalization = {
+(function(){
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('Globalization', Globalization)
+	
+Globalization.$inject = ['RelativePath', 'SiiMobilityService', 'Parameters', 'Utility'];
+function Globalization(RelativePath, SiiMobilityService, Parameters, Utility) {
+	var service = {};
 
-    labels: null,
-    alerts: null,
+    service.labels = null;
+    service.alerts = null;
+	
+	service.refresh = refresh;
+	service.modifyLabels = modifyLabels;
+	service.readWelcome = readWelcome;
+	service.readDisclaimerText = readDisclaimerText;
+	service.readDisclaimerLink = readDisclaimerLink;
+	
+	return service;
 
-    refresh: function() {
+    function refresh(language) {
+		var service = this;
+		//console.log("dbg450");
         $.ajax({
-            url: RelativePath.labels + "labels." + SettingsManager.language + ".json",
+            url: RelativePath.labels + "labels." + language + ".json",
             async: false,
             dataType: "json",
             success: function(data) {
-                Globalization.labels = data;
+				console.log("dbg452: " + JSON.stringify(data));
+                service.labels = data;
+				console.log("dbg454: " + service.labels.principalMenu.headerTitle);
             }
         });
         $.ajax({
-            url: RelativePath.alerts + "alerts." + SettingsManager.language + ".json",
+            url: RelativePath.alerts + "alerts." + language + ".json",
             async: false,
             dataType: "json",
             success: function (data) {
-                Globalization.alerts = data;
+                service.alerts = data;
             }
         });
+		//console.log("dbg470");
         $.ajax({
-            url: RelativePath.alerts + "alerts." + device.platform + "." + SettingsManager.language + ".json",
+            url: RelativePath.alerts + "alerts." + device.platform + "." + language + ".json",
             async: false,
             dataType: "json",
             success: function (data) {
-                $.extend(Globalization.alerts, data);
+				//console.log("dbg472");
+                $.extend(service.alerts, data);
             }
         });
-        Utility.loadFilesInsideDirectory("www/js/modules/", null, "labels." + SettingsManager.language + ".json", true, Globalization.loadAndAddLabels, function (e) {
-            Utility.loadFilesInsideDirectory("www/js/modules/", null, "alerts." + SettingsManager.language + ".json", true, Globalization.loadAndAddAlerts, function (e) {
-                Utility.loadFilesInsideDirectory("www/js/modules/", null, "alerts." + device.platform + "." + SettingsManager.language + ".json", true, Globalization.loadAndAddAlerts, function (e) {
+		//console.log("dbg480");
+        Utility.loadFilesInsideDirectory("www/js/modules/", null, "labels." + language + ".json", true, loadAndAddLabels, function (e) {
+            Utility.loadFilesInsideDirectory("www/js/modules/", null, "alerts." + language + ".json", true, loadAndAddAlerts, function (e) {
+                Utility.loadFilesInsideDirectory("www/js/modules/", null, "alerts." + device.platform + "." + language + ".json", true, loadAndAddAlerts, function (e) {
+					//console.log("dbg482");
                     $.ajax({
-                        url: application.remoteJsonUrl + "labels/labels." + SettingsManager.language + ".json",
+						url: SiiMobilityService.remoteJsonUrl + "labels/labels." + language + ".json",
                         cache: false,
                         timeout: Parameters.timeoutGettingMenuCategorySearcher,
                         dataType: "json",
                         success: function (data) {
-                            Globalization.modifyLabels(data);
-                            PrincipalMenu.refreshMenu();
+                            service.modifyLabels(data);
+                            //PrincipalMenu.refreshMenu();
                         }
                     });
                     $.ajax({
-                        url: application.remoteJsonUrl + "alerts/alerts." + SettingsManager.language + ".json",
+                        url: SiiMobilityService.remoteJsonUrl + "alerts/alerts." + language + ".json",
                         cache: false,
                         timeout: Parameters.timeoutGettingMenuCategorySearcher,
                         dataType: "json",
                         success: function (data) {
-                            Globalization.modifyAlerts(data);
-                            PrincipalMenu.refreshMenu();
+                            modifyAlerts(data);
+                            //PrincipalMenu.refreshMenu();
                         }
                     });
                     $.ajax({
-                        url: application.remoteJsonUrl + "alerts/alerts." + device.platform + "." + SettingsManager.language + ".json",
+                        url: SiiMobilityService.remoteJsonUrl + "alerts/alerts." + device.platform + "." + language + ".json",
                         cache: false,
                         timeout: Parameters.timeoutGettingMenuCategorySearcher,
                         dataType: "json",
                         success: function (data) {
-                            Globalization.modifyAlerts(data);
-                            PrincipalMenu.refreshMenu();
+                            modifyAlerts(data);
+                            //PrincipalMenu.refreshMenu();
                         }
                     });
                 })
             })
         });
-        
-        
-    },
+    }
 
-    loadAndAddLabels: function (fullPath) {
+    function loadAndAddLabels (fullPath) {
         $.ajax({
             url: fullPath,
             async: false,
             dataType: "json",
             success: function (data) {
-                Globalization.modifyLabels(data);
+                service.modifyLabels(data);
             }
         });
        
-    },
+    }
 
-    loadAndAddAlerts: function (fullPath) {
+    function loadAndAddAlerts (fullPath) {
         $.ajax({
             url: fullPath,
             async: false,
             dataType: "json",
             success: function (data) {
-                Globalization.modifyAlerts(data);
+                modifyAlerts(data);
             }
         });
-    },
+    }
 
-    modifyLabels: function (labelsToAdd) {
+    function modifyLabels (labelsToAdd) {
+		var service = this;
+		//console.log("dbg800: " + service);
         for (var objectName in labelsToAdd) {
             for (var fieldName in labelsToAdd[objectName]) {
-                if (Globalization.labels[objectName] != null) {
-                    Globalization.labels[objectName][fieldName] = labelsToAdd[objectName][fieldName];
+                if (service.labels[objectName] != null) {
+                    service.labels[objectName][fieldName] = labelsToAdd[objectName][fieldName];
                 } else {
                     var jsonObject = {};
                     jsonObject[fieldName] = labelsToAdd[objectName][fieldName];
-                    Globalization.labels[objectName]= jsonObject;
-                }
-            }
-        }
-    },
-
-    modifyAlerts: function (alertsToAdd) {
-        for (var objectName in alertsToAdd) {
-            for (var fieldName in alertsToAdd[objectName]) {
-                if (Globalization.alerts[objectName] != null) {
-                    Globalization.alerts[objectName][fieldName] = alertsToAdd[objectName][fieldName];
-                } else {
-                    var jsonObject = {};
-                    jsonObject[fieldName] = alertsToAdd[objectName][fieldName];
-                    Globalization.alerts[objectName] = jsonObject;
+                    service.labels[objectName]= jsonObject;
                 }
             }
         }
     }
+	
+	function readWelcome () {
+		var service = this;
+		var welcome = "";
+		if (service.labels && service.labels.chooseProfile && service.labels.chooseProfile.welcome) {
+			welcome = service.labels.chooseProfile.welcome;
+		}
+		return welcome;
+	}
+	
+	function readDisclaimerText () {
+		var service = this;
+		var disclaimerText = "";
+		if (service.labels && service.labels.chooseProfile && service.labels.chooseProfile.disclaimerText) {
+			disclaimerText = service.labels.chooseProfile.disclaimerText;
+		}
+		return disclaimerText;
+	}
+	
+	function readDisclaimerLink () {
+		var service = this;
+		var disclaimerLink = "";
+		if (service.labels && service.labels.chooseProfile && service.labels.chooseProfile.disclaimerLink) {
+			disclaimerLink = service.labels.chooseProfile.disclaimerLink;
+		}
+		return disclaimerLink;
+	}
 
+    function modifyAlerts (alertsToAdd) {
+		var service = this;
+        for (var objectName in alertsToAdd) {
+            for (var fieldName in alertsToAdd[objectName]) {
+                if (service.alerts[objectName] != null) {
+                    service.alerts[objectName][fieldName] = alertsToAdd[objectName][fieldName];
+                } else {
+                    var jsonObject = {};
+                    jsonObject[fieldName] = alertsToAdd[objectName][fieldName];
+                    service.alerts[objectName] = jsonObject;
+                }
+            }
+        }
+    }
 }
+})();

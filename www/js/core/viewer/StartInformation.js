@@ -30,6 +30,7 @@ var StartInformation = {
         ViewManager.render(null, '#startInformation', 'StartInformation');
         $('#startInformation').show();
         StartInformation.open = true;
+		//console.log("dbg100");
         application.addingMenuToCheck("StartInformation");
     },
 

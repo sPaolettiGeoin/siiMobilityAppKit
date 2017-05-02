@@ -107,7 +107,7 @@ var BusRoutesSearcher = {
     },
 
     successQuery: function (results) {
-
+		//console.log("dbg610");
         response = results["BusStops"];
         BusRoutesSearcher.hideInfoRouteModal();
 

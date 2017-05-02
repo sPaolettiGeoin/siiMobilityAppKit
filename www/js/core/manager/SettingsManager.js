@@ -1,200 +1,224 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var SettingsManager = {
+(function(){
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('SettingsManager', SettingsManager)
+	
+	SettingsManager.$inject = ['SiiMobilityService', 'RelativePath', 'Globalization', 'CategorySearcher', 'GpsManager', 'QueryManager', 'PrincipalMenu', 'Parameters'];
+	function SettingsManager(SiiMobilityService, RelativePath, Globalization, CategorySearcher, GpsManager, QueryManager, PrincipalMenu, Parameters) {
+		var service = {};
 
-    urlDefaultSettings: RelativePath.jsonFolder + "defaultSettings.json",
-    open: false,
-    menu: null,
-    defaultSettings: null,
-    language: null,
-    textSize: null,
-    maxDistance: null,
-    maxDistanceRecommender: null,
-    numberOfItems: null,
-    track: null,
-    scanPeriod: null,
-    profile: null,
-    notifySuggestions: null,
-    notifyInfoSoc: null,
-    notifyPersonalAssistant: null,
-    notifyPeriod: null,
-    periodBackgroundNotifier: null,
-    nightDay: null,
-    chronologyMaxSize: null,
-    gpsPosition: null,
+		service.urlDefaultSettings = RelativePath.jsonFolder + "defaultSettings.json";
+		
+		service.open = false;
+		service.menu = null;
+		service.defaultSettings = null;
+		service.language = null;
+		service.textSize = null;
+		service.maxDistance = null;
+		service.maxDistanceRecommender = null;
+		service.numberOfItems = null;
+		service.track = null;
+		service.scanPeriod = null;
+		service.profile = null;
+		service.notifySuggestions = null;
+		service.notifyInfoSoc = null;
+		service.notifyPersonalAssistant = null;
+		service.notifyPeriod = null;
+		service.periodBackgroundNotifier = null;
+		service.nightDay = null;
+		service.chronologyMaxSize = null;
+		service.gpsPosition = null;
+		
+		service.initializeSettings = initializeSettings;
+		service.refreshMenu = refreshMenu;
+		service.refreshAll = refreshAll;
+		service.hideSettingsMenu = hideSettingsMenu;
+		
+		return service;
 
-    initializeSettings: function(settingsOnInit) {
+		function initializeSettings (settingsOnInit) {
+			var service = this;
+			//console.log("dbg280: " + "");
+			
+			if (service.defaultSettings == null) {
+				$.ajax({
+					url: service.urlDefaultSettings,
+					async: false,
+					dataType: "json",
+					success: function(data) {
+						//console.log("dbg282: " + "");
+						service.defaultSettings = data
+					}
+				});
+			}
+			
+			for (var setting in service.defaultSettings) {
+				if (localStorage.getItem(setting) === null) {
+					localStorage.setItem(setting, service.defaultSettings[setting]);
+				}
+				service[setting] = localStorage.getItem(setting);
+			}
+			//console.log("dbg284: " + "");
+			if (service["language"] == "it") {
+				localStorage.setItem("language", "ita");
+			} else if (service["language"] == "es") {
+				localStorage.setItem("language", "esp");
+			} else if (service["language"] == "en") {
+				localStorage.setItem("language", "eng");
+			} else if (service["language"] == "fr") {
+				localStorage.setItem("language", "fra");
+			} else if (service["language"] == "de") {
+				localStorage.setItem("language", "deu");
+			}
+			service["language"] = localStorage.getItem("language");
+			//console.log("dbg286");
+			if (settingsOnInit == "true") {
+				//console.log("dbg284: " + typeof Globalization.refresh);
+				Globalization.refresh(service["language"]);
+				PrincipalMenu.refreshMenu();
+				//console.log("dbg286: " + "");
+				service.refreshMenu();
+			} else {
+				service.refreshAll();
+			}
+			//console.log("dbg288");
+			
+		}
 
-        if (SettingsManager.defaultSettings == null) {
-            $.ajax({
-                url: SettingsManager.urlDefaultSettings,
-                async: false,
-                dataType: "json",
-                success: function(data) {
-                    SettingsManager.defaultSettings = data
-                }
-            });
-        }
+		resetSettings = function() {
+			var service = this;
+			for (var setting in service.defaultSettings) {
+				service[setting] = service.defaultSettings[setting];
+			}
+			service.refreshMenu();
+		}
 
-        for (var setting in SettingsManager.defaultSettings) {
-            if (localStorage.getItem(setting) === null) {
-                localStorage.setItem(setting, SettingsManager.defaultSettings[setting]);
-            }
-            SettingsManager[setting] = localStorage.getItem(setting);
-        }
+		function saveSettings () {
+			var service = this;
+			for (var setting in service.defaultSettings) {
+				service[setting] = $("[name='" + setting+"']").val();
+				localStorage.setItem(setting, service[setting]);
+			}
+			service.refreshAll();
+		}
 
-        if (SettingsManager["language"] == "it") {
-            localStorage.setItem("language", "ita");
-        } else if (SettingsManager["language"] == "es") {
-            localStorage.setItem("language", "esp");
-        } else if (SettingsManager["language"] == "en") {
-            localStorage.setItem("language", "eng");
-        } else if (SettingsManager["language"] == "fr") {
-            localStorage.setItem("language", "fra");
-        } else if (SettingsManager["language"] == "de") {
-            localStorage.setItem("language", "deu");
-        }
-        SettingsManager["language"] = localStorage.getItem("language");
+		function cancelChanges () {
+			var service = this;
+			for (var setting in service.defaultSettings) {
+				if (localStorage.getItem(setting) === null) {
+					localStorage.setItem(setting, service.defaultSettings[setting]);
+				}
+				service[setting] = localStorage.getItem(setting);
+			}
+		}
 
-        if (settingsOnInit == "true") {
-            Globalization.refresh();
-            SettingsManager.refreshMenu();
-        } else {
-            SettingsManager.refreshAll();
-        }
-    },
+		function refreshMenu () {
+			var service = this;
+			//console.log("dbg490");
+			$.ajax({
+				url: RelativePath.jsonFolder + "settingsMenu/settingsMenu." + service.language + ".json",
+				async: false,
+				dataType: "json",
+				success: function(data) {
+					service.menu = data;
+				}
+			});
+			//console.log("dbg300");
+			for (var i = 0; i < service.menu.Settings.groups.length; i++) {
+				for (var j = 0; j < service.menu.Settings.groups[i].items.length; j++) {
+					var item = service.menu.Settings.groups[i].items[j];
+					if (item.options != null) {
+						for (var l = 0; l < item.options.length; l++) {
+							var option = item.options[l];
+							if (option.key == service[item.key]) {
+								service.menu.Settings.groups[i].items[j].options[l].selected = "selected";
+							}
+						}
+					}
+				}
+			}
+			//console.log("dbg310");
+			service.menu.Settings.platform = device.platform;
+			//console.log("dbg320");
+			if ($("#settingsMenu").length == 0) {
+				$("#indexPage").append("<div id=\"settingsMenu\" class=\"commonMenu\"></div>")
+			}
+			//console.log("dbg330");
+			//ViewManager.render(service.menu, "#settingsMenu", null);
+			//console.log("dbg340");
+		}
 
-    resetSettings: function() {
-        for (var setting in SettingsManager.defaultSettings) {
-            SettingsManager[setting] = SettingsManager.defaultSettings[setting];
-        }
-        SettingsManager.refreshMenu();
-    },
+		function showSettingsMenu () {
+			var service = this;
+			service.refreshMenu();
+			$('#settingsMenu').show();
+			service.open = true;
+			//console.log("dbg170");
+			application.addingMenuToCheck("SettingsManager");
+			application.setBackButtonListener();
+		}
 
-    saveSettings: function() {
-        for (var setting in SettingsManager.defaultSettings) {
-            SettingsManager[setting] = $("[name='" + setting+"']").val();
-            localStorage.setItem(setting, SettingsManager[setting]);
-        }
-        SettingsManager.refreshAll();
-    },
+		function hideSettingsMenu () {
+			var service = this;
+			setTimeout(function () {
+				$('#settingsMenu').hide(Parameters.hidePanelGeneralDuration);
+				service.open = false;
+				//console.log("dbg070");
+				SiiMobilityService.removingMenuToCheck("SettingsManager");
+				if (PrincipalMenu.fromPrincipalMenu) {
+					PrincipalMenu.show();
+					console.log("dbg700");
+				}
+			}, 1000);
+		}
 
-    cancelChanges: function() {
-        for (var setting in SettingsManager.defaultSettings) {
-            if (localStorage.getItem(setting) === null) {
-                localStorage.setItem(setting, SettingsManager.defaultSettings[setting]);
-            }
-            SettingsManager[setting] = localStorage.getItem(setting);
-        }
-    },
+		function refreshAll () {
+			var service = this;
+			//console.log("dbg287: " + Globalization);
+			Globalization.refresh(service["language"]);
+			PrincipalMenu.refreshMenu();
+			//console.log("dbg287: " + "");
+			service.refreshMenu();
+			//console.log("dbg288");
+			CategorySearcher.refreshCategoryMenu(service.textSize, service.language, service.profile);
+			//console.log("dbg289");
+			GpsManager.refresh(service.gpsPosition);
+			MapManager.initializeAndUpdatePopUpGpsMarker();
+			MapManager.initializeAndUpdatePopUpManualMarker();
+			ViewManager.render(null, '#threeVerticalDotMenu', 'ThreeVerticalDotMenu');
+			QueryManager.refreshParameters(service.maxDistanceRecommender, service.maxDistance, service.numberOfItems, service.language, service.profile);
+			if (service.profile == "operator") {
+				if (service.language == "ita") {
+					$("#profileShowerInner").html("Operatore");
+				}
+				else {
+					$("#profileShowerInner").html("Operator");
+				}
+				$("#profileShower").show(0);
+			} else {
+				$("#profileShower").hide(0);
+			}
+			service.hideSettingsMenu();
+		}
 
-    refreshMenu: function() {
+		function checkForBackButton () {
+			var service = this;
+			if (service.open) {
+				service.hideSettingsMenu();
+				if (PrincipalMenu.fromPrincipalMenu) {
+					PrincipalMenu.show();
+					console.log("dbg710");
+				}
+			}
+		}
 
-        $.ajax({
-            url: RelativePath.jsonFolder + "settingsMenu/settingsMenu." + SettingsManager.language + ".json",
-            async: false,
-            dataType: "json",
-            success: function(data) {
-                SettingsManager.menu = data;
-            }
-        });
-
-        for (var i = 0; i < SettingsManager.menu.Settings.groups.length; i++) {
-        	for (var j = 0; j < SettingsManager.menu.Settings.groups[i].items.length; j++) {
-        		var item = SettingsManager.menu.Settings.groups[i].items[j];
-        		if (item.options != null) {
-        			for (var l = 0; l < item.options.length; l++) {
-        				var option = item.options[l];
-        				if (option.key == SettingsManager[item.key]) {
-        					SettingsManager.menu.Settings.groups[i].items[j].options[l].selected = "selected";
-        				}
-        			}
-        		}
-        	}
-        }
-        
-        SettingsManager.menu.Settings.platform = device.platform;
-        if ($("#settingsMenu").length == 0) {
-            $("#indexPage").append("<div id=\"settingsMenu\" class=\"commonMenu\"></div>")
-        }
-        ViewManager.render(SettingsManager.menu, "#settingsMenu", null);
-    },
-
-    showSettingsMenu: function() {
-        SettingsManager.refreshMenu();
-        $('#settingsMenu').show();
-        SettingsManager.open = true;
-        application.addingMenuToCheck("SettingsManager");
-        application.setBackButtonListener();
-    },
-
-    hideSettingsMenu: function() {
-        setTimeout(function () {
-            $('#settingsMenu').hide(Parameters.hidePanelGeneralDuration);
-            SettingsManager.open = false;
-            application.removingMenuToCheck("SettingsManager");
-            if (PrincipalMenu.fromPrincipalMenu) {
-                PrincipalMenu.show();
-            }
-        }, 1000);
-    },
-
-    refreshAll: function () {
-        Globalization.refresh();
-        SettingsManager.refreshMenu();
-        CategorySearcher.refreshCategoryMenu();
-        GpsManager.refresh();
-        MapManager.initializeAndUpdatePopUpGpsMarker();
-        MapManager.initializeAndUpdatePopUpManualMarker();
-        ViewManager.render(null, '#threeVerticalDotMenu', 'ThreeVerticalDotMenu');
-        QueryManager.refreshParameters();
-        if (SettingsManager.profile == "operator") {
-            if (SettingsManager.language == "ita") {
-                $("#profileShowerInner").html("Operatore");
-            }
-            else {
-                $("#profileShowerInner").html("Operator");
-            }
-            $("#profileShower").show(0);
-        } else {
-            $("#profileShower").hide(0);
-        }
-        SettingsManager.hideSettingsMenu();
-    },
-
-    checkForBackButton: function () {
-        if (SettingsManager.open) {
-            SettingsManager.hideSettingsMenu();
-            if (PrincipalMenu.fromPrincipalMenu) {
-                PrincipalMenu.show();
-            }
-        }
-    },
-
-    closeAll: function () {
-        if (SettingsManager.open) {
-            SettingsManager.hideSettingsMenu();
-        }
-    }
-
-
-}
+		function closeAll () {
+			var service = this;
+			if (service.open) {
+				service.hideSettingsMenu();
+			}
+		}
+	}
+})();

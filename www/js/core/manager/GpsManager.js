@@ -1,188 +1,209 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var GpsManager = {
+(function() {
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('GpsManager', GpsManager)
+	
+	GpsManager.$inject = ['Parameters'];
+	function GpsManager(Parameters) {
+		var service = {};
 
-    checkGPS: null,
-    timeout: Parameters.timeoutGPS,
-    mode: null,
-    status: false,
-    latitude: null,
-    longitude: null,
-    heading: null,
-    accuracy: null,
-    altitude: null,
-    speed: null,
-    timestamp: null,
-    gpsStarted: false,
-    watchID: null,
+		service.checkGPS = null;
+		service.timeout = Parameters.timeoutGPS;
+		service.mode = null;
+		service.status = false;
+		service.latitude = null;
+		service.longitude = null;
+		service.heading = null;
+		service.accuracy = null;
+		service.altitude = null;
+		service.speed = null;
+		service.timestamp = null;
+		service.gpsStarted = false;
+		service.watchID = null;
+		
+		service.refresh = refresh;
+		service.initializePosition = initializePosition;
+		service.watchingPosition = watchingPosition;
+		service.stopWatchingPosition = stopWatchingPosition;
+		service.onSuccessInit = onSuccessInit;
+		service.onErrorInit = onErrorInit;
+		
+		return service;
 
-    refresh: function(){
-        if (SettingsManager.gpsPosition == "true" && GpsManager.gpsStarted == false) {
-            GpsManager.initializePosition();
-        } else if (SettingsManager.gpsPosition == "false" && GpsManager.gpsStarted == true) {
-            GpsManager.stopWatchingPosition();
-            MapManager.removeGpsMarker();
-            GpsManager.gpsStarted = false;
-        }
-    },
+		function refresh (gpsPosition){
+			//console.log("dbg300");
+			var service = this;
+			
+			if (gpsPosition == "true" && service.gpsStarted == false) {
+				service.initializePosition();
+			} else if (gpsPosition == "false" && service.gpsStarted == true) {
+				service.stopWatchingPosition();
+				MapManager.removeGpsMarker();
+				service.gpsStarted = false;
+			}
+		}
 
-    initializePosition: function () {
-        if (GpsManager.gpsStarted == false) {
-            if (device.platform == "Android" || device.platform == "iOS") {
-                if (device.platform == "iOS"){
-                    setInterval(function(){
-                                CheckGPS.check(function(){GpsManager.status = true}, function(){GpsManager.status = false})
-                                }, 20000);
-                }
-                CheckGPS.check(function () {
-                    var options = { timeout: GpsManager.timeout, enableHighAccuracy: true };
-                    navigator.geolocation.getCurrentPosition(GpsManager.onSuccessInit, GpsManager.onErrorInit, options);
-                },
-                    function () {
-                        if (GpsManager.checkGPS === null) {
-                            MapManager.disableGpsZoom();
-                            GpsManager.checkGPS = setInterval(function () {
-                                GpsManager.initializePosition();
-                            }, GpsManager.timeout);
-                        }
-                    });
-            }
-            if (device.platform == "Win32NT" || device.platform == "windows" || device.platform == "Web") {
-                navigator.geolocation.getCurrentPosition(GpsManager.onSuccessInit, GpsManager.onErrorInit, {
-                    timeout: GpsManager.timeout
-                });
-            }
-        }
-    },
+		function initializePosition () {
+			var service = this;
+			
+			if (service.gpsStarted == false) {
+				if (device.platform == "Android" || device.platform == "iOS") {
+					if (device.platform == "iOS"){
+						setInterval(function(){
+									CheckGPS.check(function(){service.status = true}, function(){service.status = false})
+									}, 20000);
+					}
+					CheckGPS.check(function () {
+						var options = { timeout: service.timeout, enableHighAccuracy: true };
+						//console.log("dbg010: " + typeof onSuccessInit);
+						//console.log("dbg020: " + typeof onErrorInit);
+						navigator.geolocation.getCurrentPosition(service.onSuccessInit, service.onErrorInit, options);
+						//console.log("dbg030");
+					},
+						function () {
+							if (service.checkGPS === null) {
+								MapManager.disableGpsZoom();
+								service.checkGPS = setInterval(function () {
+									service.initializePosition();
+								}, service.timeout);
+							}
+						});
+				}
+				if (device.platform == "Win32NT" || device.platform == "windows" || device.platform == "Web") {
+					navigator.geolocation.getCurrentPosition(service.onSuccessInit, service.onErrorInit, {
+						timeout: service.timeout
+					});
+				}
+			}
+		}
 
-    onSuccessInit: function(position) {
-        if (GpsManager.checkGPS != null) {
-            clearInterval(GpsManager.checkGPS);
-        }
-        GpsManager.status = true;
-        GpsManager.latitude = position.coords.latitude;
-        GpsManager.longitude = position.coords.longitude;
-        GpsManager.heading = Math.round(position.coords.heading);
-        GpsManager.accuracy = position.coords.accuracy;
-        GpsManager.timestamp = position.timestamp;
-        if (position.coords.altitude != null && position.coords.speed != null) {
-            GpsManager.altitude = position.coords.altitude;
-            GpsManager.speed = position.coords.speed;
-            GpsManager.mode = "gps";
-        } else {
-            GpsManager.mode = "network";
-        }
-        GpsManager.watchingPosition();
-        GpsManager.gpsStarted = true;
-        MapManager.initializeGpsMarker(GpsManager.latitude, GpsManager.longitude);
-        if (typeof Notificator != "undefined") {
-            Notificator.startNotifySuggestions();
-        }
-    },
+		function onSuccessInit(position) {
+			console.log("dbg040: " + position);
+			var service = this;
+			
+			if (service.checkGPS != null) {
+				clearInterval(service.checkGPS);
+			}
+			service.status = true;
+			service.latitude = position.coords.latitude;
+			service.longitude = position.coords.longitude;
+			service.heading = Math.round(position.coords.heading);
+			service.accuracy = position.coords.accuracy;
+			service.timestamp = position.timestamp;
+			if (position.coords.altitude != null && position.coords.speed != null) {
+				service.altitude = position.coords.altitude;
+				service.speed = position.coords.speed;
+				service.mode = "gps";
+			} else {
+				service.mode = "network";
+			}
+			service.watchingPosition();
+			service.gpsStarted = true;
+			MapManager.initializeGpsMarker(service.latitude, service.longitude);
+			if (typeof Notificator != "undefined") {
+				Notificator.startNotifySuggestions();
+			}
+		}
 
-    onErrorInit: function(error) {
-        if (GpsManager.checkGPS === null) {
-            navigator.notification.alert(Globalization.alerts.positionWarning.message, function() {}, Globalization.alerts.positionWarning.title);
-            if (error.code != 1)
-                GpsManager.checkGPS = setInterval(function() {
-                    GpsManager.initializePosition();
-                }, GpsManager.timeout);
-        }
-    },
+		function onErrorInit(error) {
+			var service = this;
+			
+			if (service.checkGPS === null) {
+				navigator.notification.alert(Globalization.alerts.positionWarning.message, function() {}, Globalization.alerts.positionWarning.title);
+				if (error.code != 1)
+					service.checkGPS = setInterval(function() {
+						service.initializePosition();
+					}, service.timeout);
+			}
+		}
 
-    watchingPosition: function() {
-    	var options = { timeout: GpsManager.timeout, enableHighAccuracy: true };
-    	GpsManager.watchID = navigator.geolocation.watchPosition(GpsManager.onSuccessUpdate, GpsManager.onErrorUpdate, options);
-    },
+		function watchingPosition() {
+			var service = this;
+			
+			var options = { timeout: service.timeout, enableHighAccuracy: true };
+			service.watchID = navigator.geolocation.watchPosition(onSuccessUpdate, onErrorUpdate, options);
+		}
 
-    stopWatchingPosition: function(){
-        navigator.geolocation.clearWatch(GpsManager.watchID);
-        GpsManager.watchID = null;
-    },
+		function stopWatchingPosition(){
+			var service = this;
+			
+			navigator.geolocation.clearWatch(service.watchID);
+			service.watchID = null;
+		}
 
-    onSuccessUpdate: function (position) {
-        GpsManager.status = true;
-        GpsManager.latitude = position.coords.latitude;
-        GpsManager.longitude = position.coords.longitude;
-        GpsManager.heading = Math.round(position.coords.heading);
-        GpsManager.accuracy = position.coords.accuracy;
-        GpsManager.timestamp = position.timestamp;
-        if (position.coords.altitude != null && position.coords.speed != null) {
-            GpsManager.altitude = position.coords.altitude;
-            GpsManager.speed = position.coords.speed;
-            GpsManager.mode = "gps";
-        } else {
-            GpsManager.mode = "network";
-        }
-        if (GpsManager.heading != null && !isNaN(GpsManager.heading) && CompassManager.isAvailable != true) {
-            MapManager.updateRotation(GpsManager.heading, "gps");
-        }
-        MapManager.updateGpsMarker(GpsManager.latitude, GpsManager.longitude);
-    },
+		function onSuccessUpdate (position) {
+			var service = this;
+			
+			service.status = true;
+			service.latitude = position.coords.latitude;
+			service.longitude = position.coords.longitude;
+			service.heading = Math.round(position.coords.heading);
+			service.accuracy = position.coords.accuracy;
+			service.timestamp = position.timestamp;
+			if (position.coords.altitude != null && position.coords.speed != null) {
+				service.altitude = position.coords.altitude;
+				service.speed = position.coords.speed;
+				service.mode = "gps";
+			} else {
+				service.mode = "network";
+			}
+			if (service.heading != null && !isNaN(service.heading) && CompassManager.isAvailable != true) {
+				MapManager.updateRotation(service.heading, "gps");
+			}
+			MapManager.updateGpsMarker(service.latitude, service.longitude);
+		}
 
-    onErrorUpdate: function(error) {
-        // Nothing To Do
-    },
+		function onErrorUpdate(error) {
+			// Nothing To Do
+		}
 
-    currentCoordinates: function() {
-        if (GpsManager.latitude != null && GpsManager.longitude != null) {
-            return [GpsManager.latitude, GpsManager.longitude];
-        }
-        return null;
-    },
+		function currentCoordinates() {
+			var service = this;
+			
+			if (service.latitude != null && service.longitude != null) {
+				return [service.latitude, service.longitude];
+			}
+			return null;
+		}
 
-    getDistanceFromLatLonInM: function(lat1, lon1, lat2, lon2) {
-        var R = 6371; // Radius of the earth in km
-        var dLat = GpsManager.deg2rad(lat2 - lat1); // deg2rad below
-        var dLon = GpsManager.deg2rad(lon2 - lon1);
-        var a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(GpsManager.deg2rad(lat1)) * Math.cos(GpsManager.deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = R * c; // Distance in km
-        return d * 1000;
-    },
+		function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+			var service = this;
+			
+			var R = 6371; // Radius of the earth in km
+			var dLat = service.deg2rad(lat2 - lat1); // deg2rad below
+			var dLon = service.deg2rad(lon2 - lon1);
+			var a =
+				Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+				Math.cos(service.deg2rad(lat1)) * Math.cos(service.deg2rad(lat2)) *
+				Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			var d = R * c; // Distance in km
+			return d * 1000;
+		}
 
-    getDistanceFromGPSInM: function(latitude, longitude) {
-        if (GpsManager.latitude != null && GpsManager.longitude != null) {
-            var R = 6371; // Radius of the earth in km
-            var dLat = GpsManager.deg2rad(GpsManager.latitude - latitude); // deg2rad below
-            var dLon = GpsManager.deg2rad(GpsManager.longitude - longitude);
-            var a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(GpsManager.deg2rad(latitude)) * Math.cos(GpsManager.deg2rad(GpsManager.latitude)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            var d = R * c; // Distance in km
-            return d * 1000;
-        } else {
-            return null;
-        }
-    },
+		function getDistanceFromGPSInM(latitude, longitude) {
+			var service = this;
+			
+			if (service.latitude != null && service.longitude != null) {
+				var R = 6371; // Radius of the earth in km
+				var dLat = service.deg2rad(service.latitude - latitude); // deg2rad below
+				var dLon = service.deg2rad(service.longitude - longitude);
+				var a =
+					Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+					Math.cos(service.deg2rad(latitude)) * Math.cos(service.deg2rad(service.latitude)) *
+					Math.sin(dLon / 2) * Math.sin(dLon / 2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+				var d = R * c; // Distance in km
+				return d * 1000;
+			} else {
+				return null;
+			}
+		}
 
-    deg2rad: function(deg) {
-        return deg * (Math.PI / 180)
-    }
-
-
-}
+		function deg2rad(deg) {
+			return deg * (Math.PI / 180)
+		}
+	}
+})();

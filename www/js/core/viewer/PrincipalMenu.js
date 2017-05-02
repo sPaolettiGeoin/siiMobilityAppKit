@@ -1,332 +1,386 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var PrincipalMenu = {
+(function() {
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('PrincipalMenu', PrincipalMenu)
+	
+	PrincipalMenu.$inject = ['RelativePath', 'Parameters', 'Globalization', 'SiiMobilityService', 'QueryManager', 'APIClient', 'Utility'];
+	function PrincipalMenu(RelativePath, Parameters, Globalization, SiiMobilityService, QueryManager, APIClient, Utility) {
+		var service = {
+			open: false,
+			fromPrincipalMenu: false,
+			suggestionsBadge: 0,
+			eventsBadge: 0,
+			principalMenuButtons: [],
+			draggedButton: null,
+			droppedButton: null,
+			modifing: false,
+			init: true,
 
-    open: false,
-    fromPrincipalMenu: false,
-    suggestionsBadge: 0,
-    eventsBadge: 0,
-    principalMenuButtons: [],
-    draggedButton: null,
-    droppedButton: null,
-    modifing: false,
-    init: true,
+			createPrincipalMenu: function () {
+				var service = this;
+				
+				if (service.principalMenuButtons.length == 0) {
+					if (JSON.parse(localStorage.getItem("principalMenuButtons")) != null){
+						service.principalMenuButtons = JSON.parse(localStorage.getItem("principalMenuButtons"));
+					}
+				}
 
+				if (service.init) {
+					service.checkNewButtons();
+				}
+				service.refreshMenu();
+				$("#principalMenuInner div.principalMenuButton").on("taphold", function (event) { service.modifyPrincipalMenu(); })
+				if (service.modifing == true) {
+					service.modifyPrincipalMenu();
+				}
+			},
 
-    createPrincipalMenu: function () {
-        if (PrincipalMenu.principalMenuButtons.length == 0) {
-            if (JSON.parse(localStorage.getItem("principalMenuButtons")) != null){
-                PrincipalMenu.principalMenuButtons = JSON.parse(localStorage.getItem("principalMenuButtons"));
-            }
-        }
+			refreshMenu: function () {
+				//var service = this;
+				
+				//ViewManager.render({ "principalMenuButtons": service.principalMenuButtons }, '#principalMenu', 'PrincipalMenu');
 
-        if (PrincipalMenu.init) {
-            PrincipalMenu.checkNewButtons();
-        }
-        PrincipalMenu.refreshMenu();
-        $("#principalMenuInner div.principalMenuButton").on("taphold", function (event) { PrincipalMenu.modifyPrincipalMenu(); })
-        if (PrincipalMenu.modifing == true) {
-            PrincipalMenu.modifyPrincipalMenu();
-        }
-    },
+			},
 
-    refreshMenu: function () {
-        if ($("#principalMenu").length == 0) {
-            $("#indexPage").append("<div id=\"principalMenu\"></div>")
-        }
-        ViewManager.render({ "principalMenuButtons": PrincipalMenu.principalMenuButtons }, '#principalMenu', 'PrincipalMenu');
-        for (var i = 0; i < PrincipalMenu.principalMenuButtons.length; i++) {
-            if (PrincipalMenu.principalMenuButtons[i] != undefined) {
-                $("#" + PrincipalMenu.principalMenuButtons[i].captionId).html(
-                           Globalization.labels.principalMenu[PrincipalMenu.principalMenuButtons[i].captionTextId]);
-            }
-        }
-    },
+			checkNewButtons: function () {
+				var service = this;
+				
+				//console.log("dbg500: " + typeof service.checkButtonsToAdd);
+				$.ajax({
+					url: RelativePath.jsonFolder + "principalMenu.json",
+					async: false,
+					dataType: "json",
+					success: function (data) {
+						console.log("dbg510: " + data);
+						if (service.principalMenuButtons.length == 0) {
+							service.principalMenuButtons = data;
+							for (var i = 0; i < service.principalMenuButtons.length; i++) {
+								if (service.principalMenuButtons[i] != undefined) {
+									service.principalMenuButtons[i].globalizedText = Globalization.labels.principalMenu[service.principalMenuButtons[i].captionTextId];
+									//$("#" + service.principalMenuButtons[i].captionId).html(Globalization.labels.principalMenu[service.principalMenuButtons[i].captionTextId]);
+								}
+							}
+						} else {
+							//console.log("dbg510");
+							//console.log("dbg510: " + typeof service.checkButtonsToAdd);
+							service.checkButtonsToAdd(data);
+						}
+					}
+				});
 
-    checkNewButtons: function () {
-        $.ajax({
-            url: RelativePath.jsonFolder + "principalMenu.json",
-            async: false,
-            dataType: "json",
-            success: function (data) {
-                if (PrincipalMenu.principalMenuButtons.length == 0) {
-                    PrincipalMenu.principalMenuButtons = data;
-                } else {
-                    PrincipalMenu.checkButtonsToAdd(data);
-                }
-            }
-        });
+				//console.log("dbg400: " + Utility);
+				Utility.loadFilesInsideDirectory("www/js/modules/", null, "principalMenu.json", true, service.loadModulesButton.bind(service), function (e) {
+					service.refreshMenu();
+					localStorage.setItem("principalMenuButtons", JSON.stringify(service.principalMenuButtons));
+					service.init = false;
+				});
 
-        Utility.loadFilesInsideDirectory("www/js/modules/", null, "principalMenu.json", true, PrincipalMenu.loadModulesButton, function (e) {
-            PrincipalMenu.refreshMenu();
-            localStorage.setItem("principalMenuButtons", JSON.stringify(PrincipalMenu.principalMenuButtons));
-            PrincipalMenu.init = false;
-        });
+				
+				//console.log("dbg030");
+				$.ajax({
+					url: SiiMobilityService.remoteJsonUrl + "principalMenu.json",
+					cache: false,
+					timeout: Parameters.timeoutGettingMenuCategorySearcher,
+					dataType: "json",
+					success: function (data) {
+						//console.log("dbg040");
+						console.log("dbg520");
+						console.log("dbg520: " + typeof service.checkButtonsToAdd);
+						service.checkButtonsToAdd(data);
+						service.refreshMenu();
+					}
+				});
+			},
 
-        
+			loadModulesButton: function (fullPath) {
+				var service = this;
+				//console.log("dbg528: " + this);
+				
+				$.ajax({
+					url: fullPath,
+					async: false,
+					dataType: "json",
+					success: function (data) {
+						//console.log("dbg530");
+						//console.log("dbg530: " + typeof service);
+						service.checkButtonsToAdd(data);
+					}
+				});
+			},
 
-        $.ajax({
-            url: application.remoteJsonUrl + "principalMenu.json",
-            cache: false,
-            timeout: Parameters.timeoutGettingMenuCategorySearcher,
-            dataType: "json",
-            success: function (data) {
-                PrincipalMenu.checkButtonsToAdd(data);
-                PrincipalMenu.refreshMenu();
-            }
-        });
+			checkButtonsToAdd: function(buttonsToAdd){
+				var service = this;
+				
+				for (var i = 0; i < buttonsToAdd.length; i++) {
+					var j = 0;
+					var buttonAlreadyInserted = false;
+					while (j < service.principalMenuButtons.length && !buttonAlreadyInserted) {
+						if (service.principalMenuButtons[j].captionId == buttonsToAdd[i].captionId) {
+							buttonAlreadyInserted = true;
+							if (buttonsToAdd[i].delete != true) {
+								if (buttonsToAdd[i].forceRemoved) {
+									service.principalMenuButtons[j].removed = buttonsToAdd[i].removed;
+								} else {
+									buttonsToAdd[i].removed = service.principalMenuButtons[j].removed;
+								}
+								service.principalMenuButtons.splice(j, 1, buttonsToAdd[i]);
+							} else {
+								service.principalMenuButtons.splice(j, 1);
+							}
+						}
+						j++;
+					}
+					if (!buttonAlreadyInserted && buttonsToAdd[i].delete != true) {
+						if (buttonsToAdd[i].index == 0) {
+							var inserted = false;
+							for (var k = 0; k < service.principalMenuButtons.length; k++) {
+								if (service.principalMenuButtons[k].removed == true) {
+									service.principalMenuButtons.splice(k, 0, buttonsToAdd[i]);
+									inserted = true;
+									break;
+								}
+							}
+							if (!inserted) {
+								service.principalMenuButtons.push(buttonsToAdd[i]);
+							}
+						} else {
+							service.principalMenuButtons.splice(buttonsToAdd[i].index, 0, buttonsToAdd[i]);
+						}
+					}
+				}
+				service.refreshIndexOfMenuButton();
+			},
 
-    },
+			resetPrincipalMenu: function(){
+				var service = this;
+				
+				//console.log("dbg510");
+				$.ajax({
+					url: RelativePath.jsonFolder + "principalMenu.json",
+					async: false,
+					dataType: "json",
+					success: function (data) {
+						service.principalMenuButtons = data
+						for (var i = 0; i < service.principalMenuButtons.length; i++) {
+							if (service.principalMenuButtons[i] != undefined) {
+								service.principalMenuButtons[i].globalizedText = Globalization.labels.principalMenu[service.principalMenuButtons[i].captionTextId];
+								//$("#" + service.principalMenuButtons[i].captionId).html(Globalization.labels.principalMenu[service.principalMenuButtons[i].captionTextId]);
+							}
+						}
+					}
+				});
+				service.createPrincipalMenu();
+			},
 
-    loadModulesButton: function (fullPath) {
-        $.ajax({
-            url: fullPath,
-            async: false,
-            dataType: "json",
-            success: function (data) {
-                PrincipalMenu.checkButtonsToAdd(data);
-            }
-        });
-    },
+			show: function () {
+				var service = this;
+				
+				service.createPrincipalMenu();
+				//console.log("dbg058");
+				$("#splashScreenVideoContainer").remove();
+				$('#principalMenu').show();
+				//console.log("dbg050");
+				SiiMobilityService.resetInterface();
+				MapManager.resetMarker();
+				service.open = true;
+				service.fromPrincipalMenu = false;
+				if (Math.abs(localStorage.getItem("latestEventsClickedTime") - (new Date().getTime())) > Parameters.showBadgeAfterThisTime || localStorage.getItem("latestEventsClickedTime") == null) {
+					var eventsQuery = QueryManager.createEventsQuery("day", "app");
+					APIClient.executeQueryWithoutAlert(eventsQuery, service.updatingEventsBadge, null);
+				}
+				if (service.weatherInterval != null) {
+					clearInterval(service.weatherInterval);
+				}
+				service.refreshingBadge();
+				//console.log("dbg060");
+			},
 
-    checkButtonsToAdd: function(buttonsToAdd){
-        for (var i = 0; i < buttonsToAdd.length; i++) {
-            var j = 0;
-            var buttonAlreadyInserted = false;
-            while (j < PrincipalMenu.principalMenuButtons.length && !buttonAlreadyInserted) {
-                if (PrincipalMenu.principalMenuButtons[j].captionId == buttonsToAdd[i].captionId) {
-                    buttonAlreadyInserted = true;
-                    if (buttonsToAdd[i].delete != true) {
-                        if (buttonsToAdd[i].forceRemoved) {
-                            PrincipalMenu.principalMenuButtons[j].removed = buttonsToAdd[i].removed;
-                        } else {
-                            buttonsToAdd[i].removed = PrincipalMenu.principalMenuButtons[j].removed;
-                        }
-                        PrincipalMenu.principalMenuButtons.splice(j, 1, buttonsToAdd[i]);
-                    } else {
-                        PrincipalMenu.principalMenuButtons.splice(j, 1);
-                    }
-                }
-                j++;
-            }
-            if (!buttonAlreadyInserted && buttonsToAdd[i].delete != true) {
-                if (buttonsToAdd[i].index == 0) {
-                    var inserted = false;
-                    for (var k = 0; k < PrincipalMenu.principalMenuButtons.length; k++) {
-                        if (PrincipalMenu.principalMenuButtons[k].removed == true) {
-                            PrincipalMenu.principalMenuButtons.splice(k, 0, buttonsToAdd[i]);
-                            inserted = true;
-                            break;
-                        }
-                    }
-                    if (!inserted) {
-                        PrincipalMenu.principalMenuButtons.push(buttonsToAdd[i]);
-                    }
-                } else {
-                    PrincipalMenu.principalMenuButtons.splice(buttonsToAdd[i].index, 0, buttonsToAdd[i]);
-                }
-            }
-        }
-        PrincipalMenu.refreshIndexOfMenuButton();
-    },
+			hide: function() {
+				var service = this;
+				
+				$('#principalMenu').hide(Parameters.hidePanelGeneralDuration);
+				//console.log("dbg060");
+				SiiMobilityService.setBackButtonListener();
+				service.open = false;
+			},
 
-    resetPrincipalMenu: function(){
-        $.ajax({
-            url: RelativePath.jsonFolder + "principalMenu.json",
-            async: false,
-            dataType: "json",
-            success: function (data) {
-                PrincipalMenu.principalMenuButtons = data
-            }
-        });
-        PrincipalMenu.createPrincipalMenu();
-    },
+			clickOnLogo: function(){
+				var service = this;
+				
+				if (service.open && device.platform != "Web") {
+					window.plugins.toast.showWithOptions(
+							{
+								message: Globalization.labels.principalMenu.alertLogoMessage,
+								duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
+								position: "bottom",
+								addPixelsY: -40  // added a negative value to move it up a bit (default 0) 
+							},
+							function () { }, // optional
+							function () { }    // optional 
+							);
+				} else {
+					service.show();
+				}
+			},
 
-    show: function () {
-        PrincipalMenu.createPrincipalMenu();
-        $("#splashScreenVideoContainer").remove();
-        $('#principalMenu').show();
-        application.resetInterface();
-        MapManager.resetMarker();
-        PrincipalMenu.open = true;
-        PrincipalMenu.fromPrincipalMenu = false;
-        if (Math.abs(localStorage.getItem("latestEventsClickedTime") - (new Date().getTime())) > Parameters.showBadgeAfterThisTime || localStorage.getItem("latestEventsClickedTime") == null) {
-            var eventsQuery = QueryManager.createEventsQuery("day", "app");
-            APIClient.executeQueryWithoutAlert(eventsQuery, PrincipalMenu.updatingEventsBadge, null);
-        }
-        if (PrincipalMenu.weatherInterval != null) {
-            clearInterval(PrincipalMenu.weatherInterval);
-        }
-        PrincipalMenu.refreshingBadge();
-    },
+			updateBadge: function (suggestionsBadge, eventsBadge, weatherBadge, infoSOCBadge, personalAssistantBadge) {
+				var service = this;
+				console.log("dbg100");
+				
+				if (eventsBadge != null && eventsBadge != 0) {
+					service.eventsBadge = eventsBadge;
+					localStorage.setItem("eventsBadge", service.eventsBadge);
+					console.log("dbg070");
+				}
+				service.refreshingBadge();
+			},
 
-    hide: function() {
-        $('#principalMenu').hide(Parameters.hidePanelGeneralDuration);
-        application.setBackButtonListener();
-        PrincipalMenu.open = false;
-    },
+			updatingEventsBadge: function(response){
+				var service = this;
+				
+				service.updateBadge(null, response.Event.features.length);
+			},
 
-    clickOnLogo: function(){
-        if (PrincipalMenu.open && device.platform != "Web") {
-            window.plugins.toast.showWithOptions(
-                    {
-                        message: Globalization.labels.principalMenu.alertLogoMessage,
-                        duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
-                        position: "bottom",
-                        addPixelsY: -40  // added a negative value to move it up a bit (default 0) 
-                    },
-                    function () { }, // optional
-                    function () { }    // optional 
-                    );
-        } else {
-            PrincipalMenu.show();
-        }
-    },
+			resetEventsBadge: function () {
+				var service = this;
+				
+				service.eventsBadge = 0;
+				localStorage.setItem("eventsBadge", service.eventsBadge);
+				//console.log("dbg080");
+				service.refreshingBadge();
+				$('#eventsBadge').hide();
+			},
 
-    updateBadge: function (suggestionsBadge, eventsBadge, weatherBadge, infoSOCBadge, personalAssistantBadge) {
-        if (eventsBadge != null && eventsBadge != 0) {
-            PrincipalMenu.eventsBadge = eventsBadge;
-            localStorage.setItem("eventsBadge", PrincipalMenu.eventsBadge);
-        }
-        PrincipalMenu.refreshingBadge();
-    },
+			refreshingBadge: function () {
+				var service = this;
+				//console.log("dbg110");
+				service.eventsBadge = localStorage.getItem("eventsBadge");
+				//console.log("dbg112");
+				if (service.eventsBadge != null) {
+					if (service.eventsBadge != 0) {
+						console.log("dbg120");
+						$('#eventsBadge').html(service.eventsBadge);
+						$('#eventsBadge').show();
+					}
+				}
+				//console.log("dbg130");
+			},
 
-    updatingEventsBadge: function(response){
-        PrincipalMenu.updateBadge(null, response.Event.features.length);
-    },
+			logPrincipalMenuChoices: function (buttonId) {
+				var service = this;
+				
+				if (buttonId != null ) {
+					var logPrincipalMenuChoicesQuery = QueryManager.createLogPrincipalMenuChoices(buttonId, "app");
+					APIClient.executeQueryWithoutAlert(logPrincipalMenuChoicesQuery, service.logPrincipalMenuChoicesSuccessQuery, null);
+				}
+			},
 
-    resetEventsBadge: function () {
-        PrincipalMenu.eventsBadge = 0;
-        localStorage.setItem("eventsBadge", PrincipalMenu.eventsBadge);
-        PrincipalMenu.refreshingBadge();
-        $('#eventsBadge').hide();
-    },
+			logPrincipalMenuChoicesSuccessQuery: function (data) {
+				console.log(JSON.stringify(data));
+				console.log("SUCCESS LOG BUTTON");
+			},
 
-    refreshingBadge: function () {
-        PrincipalMenu.eventsBadge = localStorage.getItem("eventsBadge");
-        if (PrincipalMenu.eventsBadge != null) {
-            if (PrincipalMenu.eventsBadge != 0) {
-                $('#eventsBadge').html(PrincipalMenu.eventsBadge);
-                $('#eventsBadge').show();
-            }
-        }
-    },
+			modifyPrincipalMenu: function(){
+				var service = this;
+				
+				$("#principalMenuInner div.principalMenuButton").draggable({
+						drag: function (event, ui) {
+							service.draggedButton = $(this).data('index');
+						},
+						containment: "#principalMenuInner",
+						revert: "invalid",
+						handle: "i.glyphicon-move",
+						zIndex: 2,
+						opacity: 0.50
+					});
+				$("#principalMenuInner div.principalMenuButton").droppable({
+						drop: function (event, ui) {
+							service.droppedButton = $(this).data('index');
+							service.swapButtons(service.draggedButton, service.droppedButton);
+						},
+					classes: {
+						"ui-droppable-hover": "ui-state-hover",
+						"ui-droppable-active": "ui-state-default"
+						}
+					});
+				service.modifing = true;
+				$("#principalMenuInner div.principalMenuButtonRemoved").show();
+				$("#principalMenuInner div.ribbon").hide();
+				$("#principalMenuInner span.step").hide();
+				$('#principalMenuModifyMenuButton').hide();
+				$('#principalMenuResetMenuButton').show();
+				$('#principalMenuSaveMenuButton').show();
+				$("#principalMenuInner i.iconModifing").show();
+				$('#principalMenuInner div').prop('onclick', null).off('click');
+			},
 
-    logPrincipalMenuChoices: function (buttonId) {
-        if (buttonId != null ) {
-            var logPrincipalMenuChoicesQuery = QueryManager.createLogPrincipalMenuChoices(buttonId, "app");
-            APIClient.executeQueryWithoutAlert(logPrincipalMenuChoicesQuery, PrincipalMenu.logPrincipalMenuChoicesSuccessQuery, null);
-        }
-    },
+			swapButtons: function (buttonIndex, targetIndex) {
+				var service = this;
+				
+				if (buttonIndex != undefined && targetIndex != undefined) {
+					var tempElement = service.principalMenuButtons[targetIndex];
+					service.principalMenuButtons[targetIndex] = service.principalMenuButtons[buttonIndex];
+					service.principalMenuButtons[targetIndex].index = targetIndex;
+					service.principalMenuButtons[buttonIndex] = tempElement;
+					service.principalMenuButtons[buttonIndex].index = buttonIndex;
+				}
+					service.createPrincipalMenu();
+			},
 
-    logPrincipalMenuChoicesSuccessQuery: function (data) {
-        console.log(JSON.stringify(data));
-        console.log("SUCCESS LOG BUTTON");
-    },
+			savePrincipalMenu: function(){
+				var service = this;
+				
+				localStorage.setItem("principalMenuButtons", JSON.stringify(service.principalMenuButtons));
+				service.modifing = false;
+				$("#principalMenuInner div.principalMenuButtonRemoved").hide();
+				$('#principalMenuModifyMenuButton').show();
+				$('#principalMenuResetMenuButton').hide();
+				$('#principalMenuSaveMenuButton').hide();
+				$("#principalMenuInner i.iconModifing").hide();
+				service.createPrincipalMenu();
+			},
 
-    modifyPrincipalMenu: function(){
-        $("#principalMenuInner div.principalMenuButton").draggable({
-                drag: function (event, ui) {
-                    PrincipalMenu.draggedButton = $(this).data('index');
-                },
-                containment: "#principalMenuInner",
-                revert: "invalid",
-                handle: "i.glyphicon-move",
-                zIndex: 2,
-                opacity: 0.50
-            });
-        $("#principalMenuInner div.principalMenuButton").droppable({
-                drop: function (event, ui) {
-                    PrincipalMenu.droppedButton = $(this).data('index');
-                    PrincipalMenu.swapButtons(PrincipalMenu.draggedButton, PrincipalMenu.droppedButton);
-                },
-            classes: {
-                "ui-droppable-hover": "ui-state-hover",
-                "ui-droppable-active": "ui-state-default"
-                }
-            });
-        PrincipalMenu.modifing = true;
-        $("#principalMenuInner div.principalMenuButtonRemoved").show();
-        $("#principalMenuInner div.ribbon").hide();
-        $("#principalMenuInner span.step").hide();
-        $('#principalMenuModifyMenuButton').hide();
-        $('#principalMenuResetMenuButton').show();
-        $('#principalMenuSaveMenuButton').show();
-        $("#principalMenuInner i.iconModifing").show();
-        $('#principalMenuInner div').prop('onclick', null).off('click');
-    },
+			removeButtonFromPrincipalMenu: function (buttonIndex) {
+				var service = this;
+				
+				service.principalMenuButtons[buttonIndex].removed = true;
+				service.principalMenuButtons.push(service.principalMenuButtons.splice(buttonIndex, 1)[0]);
+				service.refreshIndexOfMenuButton();
+				service.createPrincipalMenu();
+			},
 
-    swapButtons: function (buttonIndex, targetIndex) {
-        if (buttonIndex != undefined && targetIndex != undefined) {
-            var tempElement = PrincipalMenu.principalMenuButtons[targetIndex];
-            PrincipalMenu.principalMenuButtons[targetIndex] = PrincipalMenu.principalMenuButtons[buttonIndex];
-            PrincipalMenu.principalMenuButtons[targetIndex].index = targetIndex;
-            PrincipalMenu.principalMenuButtons[buttonIndex] = tempElement;
-            PrincipalMenu.principalMenuButtons[buttonIndex].index = buttonIndex;
-        }
-            PrincipalMenu.createPrincipalMenu();
-    },
+			addButtonToPrincipalMenu: function (buttonIndex) {
+				var service = this;
+				
+				for (var i = 0; i < service.principalMenuButtons.length; i++) {
+					if (service.principalMenuButtons[i].removed == true) {
+						if (i != buttonIndex) {
+							service.principalMenuButtons[buttonIndex].removed = false;
+							service.principalMenuButtons.splice(i, 0, service.principalMenuButtons.splice(buttonIndex, 1)[0]);
+							break;
+						} else {
+							service.principalMenuButtons[buttonIndex].removed = false;
+							break;
+						}
+					}
+				}
+				service.refreshIndexOfMenuButton();
+				service.createPrincipalMenu();
+			},
 
-    savePrincipalMenu: function(){
-        localStorage.setItem("principalMenuButtons", JSON.stringify(PrincipalMenu.principalMenuButtons));
-        PrincipalMenu.modifing = false;
-        $("#principalMenuInner div.principalMenuButtonRemoved").hide();
-        $('#principalMenuModifyMenuButton').show();
-        $('#principalMenuResetMenuButton').hide();
-        $('#principalMenuSaveMenuButton').hide();
-        $("#principalMenuInner i.iconModifing").hide();
-        PrincipalMenu.createPrincipalMenu();
-    },
-
-    removeButtonFromPrincipalMenu: function (buttonIndex) {
-        PrincipalMenu.principalMenuButtons[buttonIndex].removed = true;
-        PrincipalMenu.principalMenuButtons.push(PrincipalMenu.principalMenuButtons.splice(buttonIndex, 1)[0]);
-        PrincipalMenu.refreshIndexOfMenuButton();
-        PrincipalMenu.createPrincipalMenu();
-    },
-
-    addButtonToPrincipalMenu: function (buttonIndex) {
-        for (var i = 0; i < PrincipalMenu.principalMenuButtons.length; i++) {
-            if (PrincipalMenu.principalMenuButtons[i].removed == true) {
-                if (i != buttonIndex) {
-                    PrincipalMenu.principalMenuButtons[buttonIndex].removed = false;
-                    PrincipalMenu.principalMenuButtons.splice(i, 0, PrincipalMenu.principalMenuButtons.splice(buttonIndex, 1)[0]);
-                    break;
-                } else {
-                    PrincipalMenu.principalMenuButtons[buttonIndex].removed = false;
-                    break;
-                }
-            }
-        }
-        PrincipalMenu.refreshIndexOfMenuButton();
-        PrincipalMenu.createPrincipalMenu();
-    },
-
-    refreshIndexOfMenuButton: function () {
-        for (var i = 0; i < PrincipalMenu.principalMenuButtons.length; i++) {
-            if (PrincipalMenu.principalMenuButtons[i] != undefined) {
-                PrincipalMenu.principalMenuButtons[i].index = i;
-            }
-        }
-    }
-
-}
+			refreshIndexOfMenuButton: function () {
+				var service = this;
+				
+				for (var i = 0; i < service.principalMenuButtons.length; i++) {
+					if (service.principalMenuButtons[i] != undefined) {
+						service.principalMenuButtons[i].index = i;
+					}
+				}
+			}
+		}
+		
+		return service;
+	}
+})();

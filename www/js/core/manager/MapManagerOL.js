@@ -585,7 +585,7 @@ var MapManager = {
     },
 
     addGeoJSONLayer: function (jsonFile) {
-
+		//console.log("dbg470");
         MapManager.closePopUp();
 
         if (MapManager.searchOnSelectedServiceMarker == true) {
@@ -702,7 +702,7 @@ var MapManager = {
     },
 
     addGeoJSONLayerWithoutArea: function (jsonFile) {
-
+		//console.log("dbg600");
         MapManager.closePopUp();
 
         if (MapManager.searchOnSelectedServiceMarker == true) {
@@ -866,7 +866,7 @@ var MapManager = {
     },
 
     addSelectedServiceMarker: function (serviceType, name, civic, busLines, agency, serviceUri, latitude, longitude, alternativeIcon) {
-
+		//console.log("dbg480");
         if (MapManager.selectedServiceMarker != null) {
             MapManager.map.removeLayer(MapManager.selectedServiceMarker);
         }

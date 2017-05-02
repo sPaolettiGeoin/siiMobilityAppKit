@@ -1,198 +1,205 @@
-/* SII-MOBILITY DEV KIT MOBILE APP KM4CITY.
-   Copyright (C) 2016 DISIT Lab http://www.disit.org/6981 - University of Florence
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Affero General Public License
-   as published by the Free Software Foundation.
-   The interactive user interfaces in modified source and object code versions 
-   of this program must display Appropriate Legal Notices, as required under 
-   Section 5 of the GNU Affero GPL . In accordance with Section 7(b) of the 
-   GNU Affero GPL , these Appropriate Legal Notices must retain the display 
-   of the "Sii-Mobility Dev Kit Mobile App Km4City" logo. The Logo "Sii-Mobility
-  Dev Kit Mobile App Km4City" must be a clickable link that leads directly to the
-  Internet URL http://www.sii-mobility.org oppure a DISIT Lab., using 
-  technology derived from  Http://www.km4city.org.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU Affero General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. 
-*/
-var APIClient = {
+(function(){
+	'use strict';
+	
+	angular
+		.module('siiMobilityApp')
+		.factory('APIClient', APIClient)
+	
+	APIClient.$inject = ['SiiMobilityService', 'Parameters'];
+	function APIClient(SiiMobilityService, Parameters) {
+		var service = {
+			apiUrl: "http://www.disit.org/ServiceMap/api/v1/",                    
+			photoServerUrl: "http://www.disit.org/ServiceMap/api/v1/photo",
+			
+			fileTransfer: null,
+			lockQuery: false,
 
-    apiUrl: "http://www.disit.org/ServiceMap/api/v1/",                    
-    photoServerUrl: "http://www.disit.org/ServiceMap/api/v1/photo",
-    
-    fileTransfer: null,
-    lockQuery: false,
+			executeQuery: function(query, successCallback, errorCallback) {
+				var service = this;
+				
+				if (query != null && successCallback != null) {
+					if (!service.lockQuery) {
+						console.log("dbg250");
+						if (!SiiMobilityService.checkConnection()) {
+							navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
+						}
+						else if (SiiMobilityService.uid == null) {
+							//Not yet fully loaded?
+						}
+						else {
+							$.ajax({
+								url: encodeURI(service.apiUrl + query),
+								timeout: Parameters.timeoutGetQuery,
+								method: "GET",
+								dataType: "json",
+								beforeSend: function () {
+									service.lockQuery = true;
+									Loading.show();
+								},
+								success: function (data) {
+									service.lockQuery = false;
+									successCallback(data);
+								},
+								error: function (error) {
+									service.lockQuery = false;
+									errorCallback(error);
+								},
+								complete: function () {
+									Loading.hide();
+								}
+							});
+						}
+					} else {
+						service.showOperationRunning();
+					}
+				} 
+			},
 
-    executeQuery: function(query, successCallback, errorCallback) {
-        if (query != null && successCallback != null) {
-            if (!APIClient.lockQuery) {
-				if (!application.checkConnection()) {
-					navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
-                }
-				else if (application.uid == null) {
-					//Not yet fully loaded?
+			executeQueryWithoutAlert: function (query, successCallback, errorCallback) {
+				var service = this;
+				
+				if (query != null && successCallback != null) {
+					if (SiiMobilityService.checkConnection()) {
+						console.log(service.apiUrl + query);
+						//console.log("dbg800: " + successCallback);
+						$.ajax({
+							url: encodeURI(service.apiUrl + query),
+							timeout: Parameters.timeoutGetQuery,
+							method: "GET",
+							dataType: "json",
+							success: function (data) {
+								successCallback(data);
+							},
+							error: function (error) {
+								if (errorCallback != null) {
+									errorCallback(error);
+								}
+							},
+							beforeSend: function () {
+								if (NavigatorSearcher.started) {
+									Loading.show();
+								}
+							},
+							complete: function () {
+								if (NavigatorSearcher.started) {
+									Loading.hide();
+								}
+							}
+						});
+					} 
 				}
-				else {
-                    $.ajax({
-                        url: encodeURI(APIClient.apiUrl + query),
-                        timeout: Parameters.timeoutGetQuery,
-                        method: "GET",
-                        dataType: "json",
-                        beforeSend: function () {
-                            APIClient.lockQuery = true;
-                            Loading.show();
-                        },
-                        success: function (data) {
-                            APIClient.lockQuery = false;
-                            successCallback(data);
-                        },
-                        error: function (error) {
-                            APIClient.lockQuery = false;
-                            errorCallback(error);
-                        },
-                        complete: function () {
-                            Loading.hide();
-                        }
-                    });
+			},
+
+			executeQueryText: function (query, successCallback, errorCallback) {
+				var service = this;
+				
+				if (query != null && successCallback != null) {
+					if (!service.lockQuery) {
+						if (SiiMobilityService.checkConnection()) {
+							console.log(service.apiUrl + query);
+							$.ajax({
+								url: encodeURI(service.apiUrl + query),
+								timeout: Parameters.timeoutGetQuery,
+								method: "GET",
+								dataType: "text",
+								beforeSend: function () {
+									service.lockQuery = true;
+									Loading.showSettingsLoading();
+								},
+								success: function (data) {
+									service.lockQuery = false;
+									successCallback(data);
+								},
+								error: function (error) {
+									service.lockQuery = false;
+									errorCallback(error);
+								},
+								complete: function () {
+									Loading.hideSettingsLoading();
+									
+								}
+							});
+						} else {
+							navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
+						}
+					} else {
+						service.showOperationRunning();
+					}
 				}
-            } else {
-                APIClient.showOperationRunning();
-            }
-        } 
-    },
+			},
 
-    executeQueryWithoutAlert: function (query, successCallback, errorCallback) {
-        if (query != null && successCallback != null) {
-            if (application.checkConnection()) {
-                console.log(APIClient.apiUrl + query);
-                $.ajax({
-                    url: encodeURI(APIClient.apiUrl + query),
-                    timeout: Parameters.timeoutGetQuery,
-                    method: "GET",
-                    dataType: "json",
-                    success: function (data) {
-                        successCallback(data);
-                    },
-                    error: function (error) {
-                        if (errorCallback != null) {
-                            errorCallback(error);
-                        }
-                    },
-                    beforeSend: function () {
-                        if (NavigatorSearcher.started) {
-                            Loading.show();
-                        }
-                    },
-                    complete: function () {
-                        if (NavigatorSearcher.started) {
-                            Loading.hide();
-                        }
-                    }
-                });
-            } 
-        }
-    },
+			uploadPhoto: function (photoUrl, serviceUri, successCallback, errorCallback) {
+				var service = this;
+				
+				service.fileTransfer = new FileTransfer();
+				var options = new FileUploadOptions();
+				
 
-    executeQueryText: function (query, successCallback, errorCallback) {
-        if (query != null && successCallback != null) {
-            if (!APIClient.lockQuery) {
-                if (application.checkConnection()) {
-                    console.log(APIClient.apiUrl + query);
-                    $.ajax({
-                        url: encodeURI(APIClient.apiUrl + query),
-                        timeout: Parameters.timeoutGetQuery,
-                        method: "GET",
-                        dataType: "text",
-                        beforeSend: function () {
-                            APIClient.lockQuery = true;
-                            Loading.showSettingsLoading();
-                        },
-                        success: function (data) {
-                            APIClient.lockQuery = false;
-                            successCallback(data);
-                        },
-                        error: function (error) {
-                            APIClient.lockQuery = false;
-                            errorCallback(error);
-                        },
-                        complete: function () {
-                            Loading.hideSettingsLoading();
-                            
-                        }
-                    });
-                } else {
-                    navigator.notification.alert(Globalization.alerts.connectionError.message, function () { }, Globalization.alerts.connectionError.title);
-                }
-            } else {
-                APIClient.showOperationRunning();
-            }
-        }
-    },
+				var params = {};
+				params.uid = SiiMobilityService.uid;
+				params.serviceUri = serviceUri;
+				options.params = params;
+				if (photoUrl.substring(photoUrl.lastIndexOf(".") + 1) == "jpg") {
+					options.mimeType = "image/jpeg";
+				} else {
+					options.mimeType = "image/" + photoUrl.substring(photoUrl.lastIndexOf(".") + 1);
+				}
+				var paramsWindows = "";
+				
+				options.fileKey = "file";
+				options.fileName = photoUrl.substring(photoUrl.lastIndexOf("/") + 1);
 
-    uploadPhoto: function (photoUrl, serviceUri, successCallback, errorCallback) {
-        APIClient.fileTransfer = new FileTransfer();
-        var options = new FileUploadOptions();
-        
+				service.fileTransfer.upload(photoUrl, encodeURI(service.photoServerUrl), successCallback, errorCallback, options);
+			},
 
-        var params = {};
-        params.uid = application.uid;
-        params.serviceUri = serviceUri;
-        options.params = params;
-        if (photoUrl.substring(photoUrl.lastIndexOf(".") + 1) == "jpg") {
-            options.mimeType = "image/jpeg";
-        } else {
-            options.mimeType = "image/" + photoUrl.substring(photoUrl.lastIndexOf(".") + 1);
-        }
-        var paramsWindows = "";
-        
-        options.fileKey = "file";
-        options.fileName = photoUrl.substring(photoUrl.lastIndexOf("/") + 1);
+			uploadPhotoFromWeb: function (query, formData, successCallback, errorCallback) {
+				var service = this;
+				
+				if (SiiMobilityService.checkConnection()) {
+					console.log(service.photoServerUrl);
+					$.ajax({
+						data: formData,
+						processData: false,
+						contentType: false,
+						type: 'POST',
+						url: encodeURI(service.photoServerUrl + query),
+						timeout: Parameters.timeoutPostQuery,
+						success: function (data) {
+							successCallback(data);
+						},
+						error: function (error) {
+							errorCallback(error);
+						},
+					});
+				}
+			},
 
-        APIClient.fileTransfer.upload(photoUrl, encodeURI(APIClient.photoServerUrl), successCallback, errorCallback, options);
-    },
+			abortUploadingPhoto: function(){
+				var service = this;
+				
+				if (service.fileTransfer != null) {
+					service.fileTransfer.abort();
+				}
+			},
 
-    uploadPhotoFromWeb: function (query, formData, successCallback, errorCallback) {
-        if (application.checkConnection()) {
-            console.log(APIClient.photoServerUrl);
-            $.ajax({
-                data: formData,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                url: encodeURI(APIClient.photoServerUrl + query),
-                timeout: Parameters.timeoutPostQuery,
-                success: function (data) {
-                    successCallback(data);
-                },
-                error: function (error) {
-                    errorCallback(error);
-                },
-            });
-        }
-    },
-
-    abortUploadingPhoto: function(){
-        if (APIClient.fileTransfer != null) {
-            APIClient.fileTransfer.abort();
-        }
-    },
-
-    showOperationRunning: function () {
-        if (typeof window.plugins != "undefined") {
-            window.plugins.toast.showWithOptions(
-                        {
-                            message: Globalization.labels.apiclient.operationRunning,
-                            duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
-                            position: "bottom",
-                            addPixelsY: -40  // added a negative value to move it up a bit (default 0) 
-                        },
-                        function () { }, // optional
-                        function () { }    // optional 
-                        );
-        }
-    }
-}
+			showOperationRunning: function () {
+				var service = this;
+				
+				if (typeof window.plugins != "undefined") {
+					window.plugins.toast.showWithOptions(
+								{
+									message: Globalization.labels.service.operationRunning,
+									duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
+									position: "bottom",
+									addPixelsY: -40  // added a negative value to move it up a bit (default 0) 
+								},
+								function () { }, // optional
+								function () { }    // optional 
+								);
+				}
+			}
+		}
+		
+		return service;
+	}
+})();

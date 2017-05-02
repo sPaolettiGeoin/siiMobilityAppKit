@@ -17,7 +17,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<html>
+<html ng-app="siiMobilityApp">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
@@ -44,17 +44,33 @@ under the License.
     <link type="text/css" rel="stylesheet" href="css/survey.css" />
     <!-- OPEN LAYERS 3.12-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,performance.now|always"></script>
-    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/angular/angular.min.js"></script>
+	<script type="text/javascript" src="js/angular/ng-cordova.js"></script>
+	<script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/init/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="js/init/Application.js"></script>
+	<script type="text/javascript" src="js/init/app.js"></script>
+	<script type="text/javascript" src="js/init/SiiMobilityService.js"></script>
+	<script type="text/javascript" src="js/init/Utility.js"></script>
+	<script type="text/javascript" src="js/init/controller.js"></script>
+	<script type="text/javascript" src="js/core/utility/RelativePath.js"></script>
+	<script type="text/javascript" src="js/core/viewer/Globalization.js"></script>
+	<script type="text/javascript" src="js/core/viewer/ChooseLanguage.js"></script>
+	<script type="text/javascript" src="js/core/viewer/ChooseProfile.js"></script>
+	<script type="text/javascript" src="js/core/viewer/languageCtrl.js"></script>
+	<script type="text/javascript" src="js/core/viewer/PrincipalMenu.js"></script>
+	<script type="text/javascript" src="js/core/utility/Parameters.js"></script>
+	<script type="text/javascript" src="js/core/utility/APIClient.js"></script>
+	<script type="text/javascript" src="js/core/searcher/CategorySearcher.js"></script>
+	<script type="text/javascript" src="js/core/manager/SettingsManager.js"></script>
+	<script type="text/javascript" src="js/core/manager/GpsManager.js"></script>
+	<script type="text/javascript" src="js/core/manager/QueryManager.js"></script>
+	<script type="text/javascript" src="js/core/manager/InfoManager.js"></script>
     <script type="text/javascript" src="js/init/Utility.js"></script>
-
+	<script type="text/javascript" src="js/lib/forge-sha256.js"></script>
+<script type="text/javascript" src="js/lib/md5-min.js"></script>
 
 </head>
-<body id="home" style="background-color: #000">
-    <script type="text/javascript">
-        application.initialize();
-    </script>
+<body id="home" style="background-color: #000" ng-controller="SiiMobilityController">
     <div id="indexPage" data-role="page" role="main" style="background-color:#000">
         <div id="splashScreenVideoContainer" style="z-index: 10003; position: absolute; left: 0; top:0; bottom:0; right:0; background-image: url(img/km4citySplashPortrait.png); background-size: 100%;">
             <video id="splashScreenVideoPortrait" autoplay poster="img/km4citySplashPortrait.png" style="width: 100%">
@@ -82,7 +98,7 @@ under the License.
                 </li>
                 <li>
                     <a href="#categorySearchMenu" role="button" class="navbar-text"
-                       onclick="CategorySearcher.showPanelMenu()">
+                       onclick="showPanelMenu()">
                         <i id="categorySearchMenuImage" class="glyphicon glyphicon-th-list"></i>
                     </a>
                 </li>
@@ -119,6 +135,175 @@ under the License.
         <div id="servicesFounded">
             <a id="servicesFoundedInner" onclick="InfoManager.openLastSearchPerformed();"></a>
         </div>
+		<div id="chooseLanguage">
+			<div id="chooseLanguageImage">
+				<img src="img/icon512.png" height="100%" style="display: block;margin: auto;" >
+			</div>
+			<div id="chooseLanguageInner">
+				<button ng-repeat="lang in languages" type="button" class="btn btn-default" style="max-width: 128px; width: 30%;padding: 0px; background-color: #000;border-color: #000;"
+					ng-click="chooseLanguage(lang.key);"><img ng-src="img/flags/{{lang.key}}.png" style="width: 100%">
+				</button>
+			</div>
+			
+		</div>
+		<div id="chooseProfile">
+			<div id="chooseProfileImage">
+				<img src="img/icon512.png" height="100%" style="display: block;margin: auto;" >
+			</div>
+			<div id="chooseProfileTitle">
+				<h3><b id="chooseProfileWelcome">{{readWelcome();}}</b></h3>
+			</div>
+			<div id="chooseProfileInner">
+				<button ng-repeat="profile in profiles" type="button" class="btn btn-default" style="font-size: 20px;margin-bottom: 5px; width: 220px;padding:1px; border: 2px solid; font-weight: bolder"
+					ng-click="chooseProfile(profile.key);"><span>{{profile.label}}  </span>
+				</button>
+				<br>
+			</div>
+			<div id="chooseProfileDisclaimer">
+				<span id="chooseProfileDisclaimerText">{{readDisclaimerText()}}</span><br />
+				<a id="chooseProfileDisclaimerLink" onclick="StartInformation.show();">{{readDisclaimerLink();}}</a>
+			</div>
+		</div>
+		<div id="settingsMenu" class="commonMenu">
+		
+		</div>
+		<div id="principalMenu">
+			<style>
+
+			.principalMenuButton{
+				text-align:center; 
+				box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+				border-radius: 2px;
+				background-color: white;  
+				position: relative; 
+				float: left; 
+				width: 30%;
+				height: 70px;
+				padding-top: 5px; 
+				margin: 3px 1.5% 3px 1.5%
+			}
+
+			.principalMenuButton:active {
+				box-shadow: none;
+			}
+
+			.principalMenuButtonRemoved{
+				text-align:center; 
+				background: rgba(255, 255, 255, 0.4);
+				border-radius: 2px;
+				position: relative; 
+				float: left; 
+				width: 30%;
+				height: 70px;
+				padding-top: 5px; 
+				margin: 3px 1.5% 3px 1.5%;
+				display:none
+			}
+
+			.step {
+			  font-size: 14px;
+			  background: #F70505;
+			  border-radius: 0.8em;
+			  -moz-border-radius: 0.8em;
+			  -webkit-border-radius: 0.8em;
+			  color: #ffffff;
+			  display: inline-block;
+			  font-weight: bold;
+			  line-height: 1.6em;
+			  text-align: center;
+			  width: 1.6em; 
+			  position: absolute;
+			  z-index: 1;
+			  bottom: -8px;
+			  right: -5px;
+			}
+
+			.textCaption {
+				position:absolute;
+				bottom: 1px;
+				left:0;
+				right: 0;
+			}
+
+			.ribbon {
+			  position: absolute;
+			  left: -5px; top: -5px;
+			  z-index: 1;
+			  overflow: hidden;
+			  width: 75px; height: 75px;
+			  text-align: right;
+			}
+			.ribbon span {
+			  font-size: 10px;
+			  font-weight: bold;
+			  color: #FFF;
+			  text-transform: uppercase;
+			  text-align: center;
+			  line-height: 20px;
+			  transform: rotate(-45deg);
+			  -webkit-transform: rotate(-45deg);
+			  width: 100px;
+			  display: block;
+			  background: #F70505;
+			  background: linear-gradient(#F70505 0%, #8F0808 100%);
+			  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+			  position: absolute;
+			  top: 19px; left: -21px;
+			}
+			.ribbon span::before {
+			  content: "";
+			  position: absolute; left: 0px; top: 100%;
+			  z-index: -1;
+			  border-left: 3px solid #8F0808;
+			  border-right: 3px solid transparent;
+			  border-bottom: 3px solid transparent;
+			  border-top: 3px solid #8F0808;
+			}
+			.ribbon span::after {
+			  content: "";
+			  position: absolute; right: 0px; top: 100%;
+			  z-index: -1;
+			  border-left: 3px solid transparent;
+			  border-right: 3px solid #8F0808;
+			  border-bottom: 3px solid transparent;
+			  border-top: 3px solid #8F0808;
+			}
+
+			.ui-state-default{
+				border: 2px solid darkblue;
+				border-radius: 2px;
+			}
+
+			.ui-state-hover{
+				opacity: 0.5
+			}
+			</style>
+			<div class="panel panel-default">
+				<div class="panel-heading" style="height: 55px;padding-left: 7px; padding-top: 1px;">
+					<a id="principalMenuModifyMenuButton" class="pull-right" onclick="PrincipalMenu.modifyPrincipalMenu();">
+						<i class="glyphicon glyphicon-pencil"
+						   style="float: right; color: #777; line-height: 52px;"></i>
+					</a>
+					<a id="principalMenuSaveMenuButton" style="display: none" class="pull-right" onclick="PrincipalMenu.savePrincipalMenu();">
+						<i class="glyphicon glyphicon-floppy-disk"
+						   style="float: right; padding-left: 15px; color: #777; line-height: 52px;"></i>
+					</a>
+					<a id="principalMenuResetMenuButton" style="display: none" class="pull-right" onclick="PrincipalMenu.resetPrincipalMenu();">
+						<i class="glyphicon glyphicon-repeat"
+						   style="float: right; color: #777; line-height: 52px;"></i>
+					</a>
+					<img src="img/km4city.png" width="40" height="40" onclick="PrincipalMenu.clickOnLogo();"/>
+					<b id="principalMenuHeaderTitle" style="line-height: 2.5;margin-left: 10px">{{headerTitle}}</b>
+				</div>
+			</div>
+			<div id="principalMenuInner">
+						<div ng-repeat="principalMenuButton in principalMenuButtons" class="principalMenuButton" data-index="{{index}}" mg-click="">
+									<img style="height:{{imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
+									<b style="font-size:{{textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
+									<b class="textCaption" id="{{captionId}}"></b>
+						</div>
+			</div>
+		</div>
      </div>
  
     <div id="testProdAPIAlert" class="testProdAlert" style="left: 10%; width: 15%; height: 32px;">API</div>

@@ -60,7 +60,7 @@ var PathFinder = {
     },
 
     init: function() {
-                
+        //console.log("dbg550");
         PathFinder.startPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/FirstStopOfRoute.png', "classic");
         PathFinder.destPointIcon = Utility.checkServiceIcon(RelativePath.images + SettingsManager.language + '/LastStopOfRoute.png', "classic");
         

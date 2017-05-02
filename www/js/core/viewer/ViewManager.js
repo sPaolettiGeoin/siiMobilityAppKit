@@ -35,6 +35,9 @@ var ViewManager = {
     },
 
     render: function(data, component, templateName) {
+		console.log("dbg380: " + JSON.stringify(data));
+		console.log("dbg382: " + component);
+		console.log("dbg384: " + templateName);
         var template = "";
         if (templateName == null) {
             for (var pageType in data) {
@@ -48,13 +51,15 @@ var ViewManager = {
                 template = this.loadTemplate(templateName);
             }
         }
-
+		var html = template;
         if (template != "") {
-            html = Mustache.render(template, data);
+            //html = Mustache.render(template, data);
         }
-
-        $(component).empty();
-        $(component).html(html);
+		//console.log("dbg360");
+        //$(component).empty();
+		//html = "<html><body>Ciao mamma</body></html>";
+		//console.log("dbg365: " + html);
+        //$(component).html(html);
+		//console.log("dbg370");
     }
-
 }
