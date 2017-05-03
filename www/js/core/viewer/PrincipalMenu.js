@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('PrincipalMenu', PrincipalMenu)
 	
-	PrincipalMenu.$inject = ['RelativePath', 'Parameters', 'Globalization', 'SiiMobilityService', 'QueryManager', 'APIClient', 'Utility'];
-	function PrincipalMenu(RelativePath, Parameters, Globalization, SiiMobilityService, QueryManager, APIClient, Utility) {
+	PrincipalMenu.$inject = ['RelativePath', 'Parameters', 'Globalization', 'SiiMobilityService', 'QueryManager', 'APIClient', 'Utility', 'MapManager'];
+	function PrincipalMenu(RelativePath, Parameters, Globalization, SiiMobilityService, QueryManager, APIClient, Utility, MapManager) {
 		var service = {
 			open: false,
 			fromPrincipalMenu: false,
@@ -85,9 +85,7 @@
 					timeout: Parameters.timeoutGettingMenuCategorySearcher,
 					dataType: "json",
 					success: function (data) {
-						//console.log("dbg040");
-						console.log("dbg520");
-						console.log("dbg520: " + typeof service.checkButtonsToAdd);
+						//console.log("dbg520");
 						service.checkButtonsToAdd(data);
 						service.refreshMenu();
 					}

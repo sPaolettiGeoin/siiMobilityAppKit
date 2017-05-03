@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('CategorySearcher', CategorySearcher)
 	
-	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService'];
-	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService) {
+	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService', 'Loading'];
+	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService, Loading) {
 		var service = {};
 
 		service.openPanelMenu = false;

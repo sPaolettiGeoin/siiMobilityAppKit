@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('APIClient', APIClient)
 	
-	APIClient.$inject = ['SiiMobilityService', 'Parameters'];
-	function APIClient(SiiMobilityService, Parameters) {
+	APIClient.$inject = ['SiiMobilityService', 'Parameters', 'NavigatorSearcher'];
+	function APIClient(SiiMobilityService, Parameters, NavigatorSearcher) {
 		var service = {
 			apiUrl: "http://www.disit.org/ServiceMap/api/v1/",                    
 			photoServerUrl: "http://www.disit.org/ServiceMap/api/v1/photo",

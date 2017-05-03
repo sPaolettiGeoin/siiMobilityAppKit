@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('GpsManager', GpsManager)
 	
-	GpsManager.$inject = ['Parameters'];
-	function GpsManager(Parameters) {
+	GpsManager.$inject = ['Parameters', 'Globalization'];
+	function GpsManager(Parameters, Globalization) {
 		var service = {};
 
 		service.checkGPS = null;
@@ -27,8 +27,6 @@
 		service.initializePosition = initializePosition;
 		service.watchingPosition = watchingPosition;
 		service.stopWatchingPosition = stopWatchingPosition;
-		service.onSuccessInit = onSuccessInit;
-		service.onErrorInit = onErrorInit;
 		
 		return service;
 
@@ -59,7 +57,7 @@
 						var options = { timeout: service.timeout, enableHighAccuracy: true };
 						//console.log("dbg010: " + typeof onSuccessInit);
 						//console.log("dbg020: " + typeof onErrorInit);
-						navigator.geolocation.getCurrentPosition(service.onSuccessInit, service.onErrorInit, options);
+						navigator.geolocation.getCurrentPosition(onSuccessInit.bind(service), onErrorInit.bind(service), options);
 						//console.log("dbg030");
 					},
 						function () {
@@ -72,7 +70,7 @@
 						});
 				}
 				if (device.platform == "Win32NT" || device.platform == "windows" || device.platform == "Web") {
-					navigator.geolocation.getCurrentPosition(service.onSuccessInit, service.onErrorInit, {
+					navigator.geolocation.getCurrentPosition(onSuccessInit.bind(service), onErrorInit.bind(service), {
 						timeout: service.timeout
 					});
 				}
@@ -117,7 +115,7 @@
 						service.initializePosition();
 					}, service.timeout);
 			}
-		}
+		};
 
 		function watchingPosition() {
 			var service = this;

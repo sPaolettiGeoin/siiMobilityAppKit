@@ -30,7 +30,7 @@ function Globalization(RelativePath, SiiMobilityService, Parameters, Utility) {
             success: function(data) {
 				console.log("dbg452: " + JSON.stringify(data));
                 service.labels = data;
-				console.log("dbg454: " + service.labels.principalMenu.headerTitle);
+				//console.log("dbg454: " + service.labels.principalMenu.headerTitle);
             }
         });
         $.ajax({

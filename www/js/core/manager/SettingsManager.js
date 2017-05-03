@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('SettingsManager', SettingsManager)
 	
-	SettingsManager.$inject = ['SiiMobilityService', 'RelativePath', 'Globalization', 'CategorySearcher', 'GpsManager', 'QueryManager', 'PrincipalMenu', 'Parameters'];
-	function SettingsManager(SiiMobilityService, RelativePath, Globalization, CategorySearcher, GpsManager, QueryManager, PrincipalMenu, Parameters) {
+	SettingsManager.$inject = ['SiiMobilityService', 'RelativePath', 'Globalization', 'CategorySearcher', 'GpsManager', 'QueryManager', 'PrincipalMenu', 'Parameters', 'MapManager'];
+	function SettingsManager(SiiMobilityService, RelativePath, Globalization, CategorySearcher, GpsManager, QueryManager, PrincipalMenu, Parameters, MapManager) {
 		var service = {};
 
 		service.urlDefaultSettings = RelativePath.jsonFolder + "defaultSettings.json";
@@ -187,7 +187,7 @@
 			GpsManager.refresh(service.gpsPosition);
 			MapManager.initializeAndUpdatePopUpGpsMarker();
 			MapManager.initializeAndUpdatePopUpManualMarker();
-			ViewManager.render(null, '#threeVerticalDotMenu', 'ThreeVerticalDotMenu');
+			console.log("dbg111: ViewManager.render(null, '#threeVerticalDotMenu', 'ThreeVerticalDotMenu');");
 			QueryManager.refreshParameters(service.maxDistanceRecommender, service.maxDistance, service.numberOfItems, service.language, service.profile);
 			if (service.profile == "operator") {
 				if (service.language == "ita") {
