@@ -74,7 +74,8 @@ under the License.
 	<script type="text/javascript" src="js/lib/ol.js"></script>
 	<script type="text/javascript" src="js/lib/jquery-ui-1.12.1.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.fancytree-all.min.js"></script>
-<script type="text/javascript" src="js/lib/md5-min.js"></script>
+	<script type="text/javascript" src="js/lib/md5-min.js"></script>
+	<script type="text/javascript" src="js/modules/healthCare/HealthCare.js"></script>
 
 </head>
 <body id="home" style="background-color: #000" ng-controller="SiiMobilityController">
@@ -304,10 +305,11 @@ under the License.
 				</div>
 			</div>
 			<div id="principalMenuInner">
-						<div ng-repeat="principalMenuButton in principalMenuButtons" class="principalMenuButton" data-index="{{index}}" mg-click="">
-									<img style="height:{{imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
-									<b style="font-size:{{textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
-									<b class="textCaption" id="{{captionId}}"></b>
+						<div ng-repeat="principalMenuButton in principalMenuButtons" class="principalMenuButton" data-index="{{index}}" ng-click="launchApp(principalMenuButton);">
+							<i ng-if="principalMenuButton.iconClass" class="{{principalMenuButton.iconClass}}" style="font-size:{{principalMenuButton.iconFontSize}};color: {{principalMenuButton.iconColor}};"></i ng-if="principalMenuButton.iconClass">
+							<img ng-if="principalMenuButton.imgSrc" style="height:{{imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
+							<b style="font-size:{{textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
+							<b class="textCaption" id="{{captionId}}"></b>
 						</div>
 			</div>
 		</div>

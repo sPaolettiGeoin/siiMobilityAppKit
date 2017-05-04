@@ -1,6 +1,5 @@
 [
   {
-    "callback": "PrincipalMenu.hide();HealthCare.init();",
     "iconId": "",
     "iconClass": "glyphicon glyphicon-heart",
     "iconFontSize": "35px",

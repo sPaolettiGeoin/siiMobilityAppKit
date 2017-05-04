@@ -28,7 +28,7 @@ function Globalization(RelativePath, SiiMobilityService, Parameters, Utility) {
             async: false,
             dataType: "json",
             success: function(data) {
-				console.log("dbg452: " + JSON.stringify(data));
+				//console.log("dbg452: " + JSON.stringify(data));
                 service.labels = data;
 				//console.log("dbg454: " + service.labels.principalMenu.headerTitle);
             }

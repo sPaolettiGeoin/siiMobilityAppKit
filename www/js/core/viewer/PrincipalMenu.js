@@ -53,7 +53,7 @@
 					async: false,
 					dataType: "json",
 					success: function (data) {
-						console.log("dbg510: " + data);
+						//console.log("dbg510: " + service.principalMenuButtons.length);
 						if (service.principalMenuButtons.length == 0) {
 							service.principalMenuButtons = data;
 							for (var i = 0; i < service.principalMenuButtons.length; i++) {
@@ -115,6 +115,7 @@
 					var j = 0;
 					var buttonAlreadyInserted = false;
 					while (j < service.principalMenuButtons.length && !buttonAlreadyInserted) {
+						//console.log("dbg222: " + JSON.stringify(service.principalMenuButtons[j]));
 						if (service.principalMenuButtons[j].captionId == buttonsToAdd[i].captionId) {
 							buttonAlreadyInserted = true;
 							if (buttonsToAdd[i].delete != true) {
