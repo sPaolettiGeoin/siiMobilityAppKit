@@ -7,7 +7,7 @@
 	
 	InfoManager.$inject = ['Utility'];
 	function InfoManager(Utility) {
-		var service = {
+		var InfoManager = {
 			open: false,
 			modalImageOpen: false,
 			modalTimetableOpen: false,
@@ -175,7 +175,6 @@
 				MapManager.updateMap();
 				MapManager.centerMapOnCoordinates(latitude, longitude);
 				InfoManager.open = false;
-				//console.log("dbg130");
 				application.removingMenuToCheck("InfoManager");
 				InfoManager.expanded = false;
 			},
@@ -363,11 +362,9 @@
 						}
 					}
 					if (InfoManager.open) {
-						//console.log("dbg140");
 						application.removingMenuToCheck("InfoManager");
 					}
 					InfoManager.open = true;
-					//console.log("dbg150");
 					application.addingMenuToCheck("InfoManager");
 					Utility.checkAxisToDrag("#infoMenu");
 					$("#serviceImagePreview").panzoom({ minScale: 1, contain: 'invert' });
@@ -523,6 +520,6 @@
 			},
 		}
 
-		return service;
+		return InfoManager;
 	}
 })();

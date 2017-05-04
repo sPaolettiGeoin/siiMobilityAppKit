@@ -7,7 +7,8 @@
 	
 	Utility.$inject = [];
 	function Utility(RelativePath, Globalization, CategorySearcher, GpsManager, QueryManager, PrincipalMenu) {
-		var service = {
+		var Utility = {
+
 			iconUrl: null,
 			retry: 0,
 			retryNumber: 3,
@@ -127,7 +128,6 @@
 
 
 			checkServiceIcon: function (iconUrl, type) {
-				//console.log("dbg460");
 				$.ajax({
 					url: iconUrl,
 					async: false,
@@ -148,7 +148,6 @@
 			},
 
 			enrichService: function (serviceToEnrich, identifier) {
-				//console.log("dbg470");
 				if (serviceToEnrich != null) {
 					if (serviceToEnrich.properties.name != null) {
 						serviceToEnrich.properties.name = serviceToEnrich.properties.name.replace(/_/g, " ").toLowerCase();
@@ -330,7 +329,6 @@
 			},
 
 			refreshDinamicFields: function (serviceToRefresh, identifier) {
-				//console.log("dbg530");
 				serviceToRefresh.properties.unescapeHtml = Utility.unescapeHtmlMst;
 				serviceToRefresh.properties.uriToLabelDBPedia = Utility.uriToLabelDBPediaMst;
 				serviceToRefresh.properties.uriGlobalizeDBPedia = Utility.uriGlobalizeDBPediaMst;
@@ -420,17 +418,16 @@
 								  reading--;
 								  if (entries.length > 0) {
 									  entries.forEach(function (entry) {
-										  //console.log("dbg900: " + typeof singleFileCallback);
-										  //console.log("dbg910: " + typeof this.singleFileCallback);
+										  
 										  if (entry.isDirectory && recursive == true) {
 											  readSome(entry.createReader());
 										  } else if (type != null && entry.name.split('.').pop() == type) {
-											  //console.log(entry.fullPath);
+											  console.log(entry.fullPath);
 											  if (singleFileCallback != null) {
 												  singleFileCallback(entry.fullPath.substring(5));
 											  }
 										  } else if (substring != null && entry.name.indexOf(substring) != -1) {
-											  //console.log(entry.fullPath);
+											  console.log(entry.fullPath);
 											  if (singleFileCallback != null) {
 												  singleFileCallback(entry.fullPath.substring(5));
 											  }
@@ -439,10 +436,10 @@
 								  }
 								  if (reading == 0) {
 									  if (type != null) {
-										  //console.log("DONE LOAD " + type + " ON " + relativeDirectory);
+										  console.log("DONE LOAD " + type + " ON " + relativeDirectory);
 									  }
 									  if (substring != null) {
-										  //console.log("DONE LOAD " + substring + " ON " + relativeDirectory);
+										  console.log("DONE LOAD " + substring + " ON " + relativeDirectory);
 									  }
 									  if (finalCallback != null) {
 										  finalCallback("SUCCESS LOAD OF " + relativeDirectory);
@@ -467,7 +464,7 @@
 			}
 		}
 		
-		return service;
+		return Utility;
 	}
 })();
 

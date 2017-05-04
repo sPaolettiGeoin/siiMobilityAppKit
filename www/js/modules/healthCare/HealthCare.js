@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('HealthCare', HealthCare)
 	
-	HealthCare.$inject = ['Globalization', 'PrincipalMenu'];
-	function HealthCare(Globalization, PrincipalMenu) {
+	HealthCare.$inject = ['Globalization', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager'];
+	function HealthCare(Globalization, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
 		var HealthCare = {
 			datiAnagrafici: {
 				name: "",
@@ -90,7 +90,7 @@
 						append("<div id=\"" + HealthCare.idMenu + "\" class=\"commonHalfMenu\"></div>")
 				}
 				
-				ViewManager.render(HealthCare, "#" + HealthCare.idMenu, "HealthCareMenu");
+				//ViewManager.render(HealthCare, "#" + HealthCare.idMenu, "HealthCareMenu");
 				
 				Utility.movingPanelWithTouch("#" + HealthCare.idMenu + "ExpandHandler",
 					"#" + HealthCare.idMenu);
