@@ -69,6 +69,8 @@
 				SiiMobilityService.setBackButtonListener();
 				HealthCare.refreshMenu();
 				HealthCare.expandHealthCare();
+				console.log("dbg123: " + $("#container"));
+				$("#container").show();
 			},
 
 			hide: function () {
@@ -109,6 +111,25 @@
 			},
 			
 			expandHealthCare: function () {
+				$("commonMenu").hide();
+				$("navbar").hide();
+				$("navbarNavigation").hide();
+				$("categorySearchMenu").hide();
+				$("loadingImage").hide();
+				$("autoSearchLoadingImage").hide();
+				$("settingsLoadingImage").hide();
+				$("dialogModal").hide();
+				$("servicesFounded").hide();
+				$("chooseLanguage").hide();
+				$("chooseProfile").hide();
+				$("settingsMenu").hide();
+				$("principalMenu").hide();
+				$("indexPage").hide();
+				
+				$("container2").show();
+				
+				
+				console.log("dbg010: " + HealthCare.idMenu);
 				Utility.expandMenu("#" + HealthCare.idMenu,
 								   "#" + HealthCare.idMenu + "Expand",
 								   "#" + HealthCare.idMenu + "Collapse");
@@ -193,7 +214,8 @@
 				if (response && response.status && response.status.error_code === 0) {
 					console.log("typeof response.data.journey: " + typeof response.data.journey);
 					HealthCare.showMap = typeof response.data.journey != "undefined";
-					console.log("HealthCare.showMap: " + HealthCare.showMap);
+					//HealthCare.showMap = true;
+					//console.log("HealthCare.showMap: " + HealthCare.showMap);
 					if (HealthCare.showMap) {
 						HealthCare.collapseHealthCare();
 					}
@@ -222,6 +244,8 @@
 				HealthCare.refreshMenu();
 			},
 		}
+		
+		HealthCare.doWork();
 		
 		return HealthCare;
 	}

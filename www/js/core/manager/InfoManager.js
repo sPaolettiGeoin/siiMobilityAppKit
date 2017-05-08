@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('InfoManager', InfoManager)
 	
-	InfoManager.$inject = ['Utility'];
-	function InfoManager(Utility) {
+	InfoManager.$inject = ['Utility', 'MapManager', 'GpsManager'];
+	function InfoManager(Utility, MapManager, GpsManager) {
 		var InfoManager = {
 			open: false,
 			modalImageOpen: false,
@@ -242,7 +242,7 @@
 					if (response[category].features != null) {
 						if (response[category].features.length != 0) {
 
-							Utility.enrichService(response[category].features[0]);
+							Utility.enrichService(response[category].features[0], undefined, Math.round(GpsManager.getDistanceFromGPSInM(response[category].features[0].geometry.coordinates[1], response[category].features[0].geometry.coordinates[0])));
 
 							if (response[category].features[0].properties.serviceType != null) {
 								var found = false;

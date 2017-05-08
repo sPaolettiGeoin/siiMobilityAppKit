@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('Utility', Utility)
 	
-	Utility.$inject = [];
-	function Utility(RelativePath, Globalization, CategorySearcher, GpsManager, QueryManager, PrincipalMenu) {
+	Utility.$inject = ['RelativePath', 'MapManager'];
+	function Utility(RelativePath, MapManager) {
 		var Utility = {
 
 			iconUrl: null,
@@ -147,7 +147,7 @@
 				return Utility.iconUrl;
 			},
 
-			enrichService: function (serviceToEnrich, identifier) {
+			enrichService: function (serviceToEnrich, identifier, distanceFromGPS) {
 				if (serviceToEnrich != null) {
 					if (serviceToEnrich.properties.name != null) {
 						serviceToEnrich.properties.name = serviceToEnrich.properties.name.replace(/_/g, " ").toLowerCase();
@@ -324,11 +324,11 @@
 							}
 						}
 					}
-					Utility.refreshDinamicFields(serviceToEnrich, identifier);
+					Utility.refreshDinamicFields(serviceToEnrich, identifier, distanceFromGPS);
 				}
 			},
 
-			refreshDinamicFields: function (serviceToRefresh, identifier) {
+			refreshDinamicFields: function (serviceToRefresh, identifier, distanceFromGPS) {
 				serviceToRefresh.properties.unescapeHtml = Utility.unescapeHtmlMst;
 				serviceToRefresh.properties.uriToLabelDBPedia = Utility.uriToLabelDBPediaMst;
 				serviceToRefresh.properties.uriGlobalizeDBPedia = Utility.uriGlobalizeDBPediaMst;
@@ -349,11 +349,12 @@
 					serviceToRefresh.properties.identifier = identifier;
 				}
 
-				serviceToRefresh.properties.distanceFromGPS = Math.round(GpsManager.getDistanceFromGPSInM(serviceToRefresh.geometry.coordinates[1], serviceToRefresh.geometry.coordinates[0]));
+				serviceToRefresh.properties.distanceFromGPS = distanceFromGPS;
 
 				var manualMarkerCoordinates = MapManager.manualMarkerCoordinates();
 				if (manualMarkerCoordinates != null) {
-					serviceToRefresh.properties.distanceFromSearchCenter = Math.round(GpsManager.getDistanceFromLatLonInM(serviceToRefresh.geometry.coordinates[1], serviceToRefresh.geometry.coordinates[0], manualMarkerCoordinates[0], manualMarkerCoordinates[1]));
+					//serviceToRefresh.properties.distanceFromSearchCenter = Math.round(GpsManager.getDistanceFromLatLonInM(serviceToRefresh.geometry.coordinates[1], serviceToRefresh.geometry.coordinates[0], manualMarkerCoordinates[0], manualMarkerCoordinates[1]));
+					serviceToRefresh.properties.distanceFromSearchCenter = distanceFromGPS;
 				} else {
 					serviceToRefresh.properties.distanceFromSearchCenter = null;
 				}
@@ -422,12 +423,12 @@
 										  if (entry.isDirectory && recursive == true) {
 											  readSome(entry.createReader());
 										  } else if (type != null && entry.name.split('.').pop() == type) {
-											  console.log(entry.fullPath);
+											  //console.log(entry.fullPath);
 											  if (singleFileCallback != null) {
 												  singleFileCallback(entry.fullPath.substring(5));
 											  }
 										  } else if (substring != null && entry.name.indexOf(substring) != -1) {
-											  console.log(entry.fullPath);
+											  //console.log(entry.fullPath);
 											  if (singleFileCallback != null) {
 												  singleFileCallback(entry.fullPath.substring(5));
 											  }
@@ -436,10 +437,10 @@
 								  }
 								  if (reading == 0) {
 									  if (type != null) {
-										  console.log("DONE LOAD " + type + " ON " + relativeDirectory);
+										  //console.log("DONE LOAD " + type + " ON " + relativeDirectory);
 									  }
 									  if (substring != null) {
-										  console.log("DONE LOAD " + substring + " ON " + relativeDirectory);
+										  //console.log("DONE LOAD " + substring + " ON " + relativeDirectory);
 									  }
 									  if (finalCallback != null) {
 										  finalCallback("SUCCESS LOAD OF " + relativeDirectory);

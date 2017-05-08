@@ -115,7 +115,7 @@ var BusRoutesSearcher = {
             var indexMinDistanceFromCenter = 0;
             var indexMinDistanceFromGPS = 0;
             for (var i = 0; i < response.features.length; i++) {
-                Utility.enrichService(response.features[i], i)
+                Utility.enrichService(response.features[i], i, Math.round(GpsManager.getDistanceFromGPSInM(response[category].features[0].geometry.coordinates[1], response[category].features[0].geometry.coordinates[0])))
 
                 if (response.features[i].properties.distanceFromSearchCenter != null) {
                     if (response.features[i].properties.distanceFromSearchCenter < response.features[indexMinDistanceFromCenter].properties.distanceFromSearchCenter) {

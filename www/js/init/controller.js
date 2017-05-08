@@ -1,7 +1,7 @@
 (function() {
 	var siiMobilityApp = angular.module('siiMobilityApp');
 
-	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
+	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, $state, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
 		$.ajax({
 			url: RelativePath.jsonFolder + "languages.json",
 			async: false,
@@ -224,13 +224,8 @@
 		
 		$scope.launchApp = function(principalMenuButton) {
 			console.log("dbg999: " + "");
-			/*
-			angular.module('siiMobilityApp').service = function('HealthCare') {
-				$provide.service('HealthCare');
-				return (this);
-			};
-			*/
 			$injector.invoke(['HealthCare', function(service){service.doWork();}]);
+			$state.go("dynamicModules");
 			
 			//HealthCare.doWork();
 			//principalMenuButton.callback

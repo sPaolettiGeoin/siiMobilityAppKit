@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('CategorySearcher', CategorySearcher)
 	
-	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService', 'Loading'];
-	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService, Loading) {
+	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService', 'Loading', 'GpsManager'];
+	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService, Loading, GpsManager) {
 		var service = {};
 
 		service.openPanelMenu = false;
@@ -565,7 +565,7 @@
 			if (responseObject["Results"].features.length != 0) {
 				for (var i = 0; i < responseObject["Results"].features.length; i++) {
 					responseObject["Results"].features[i].id = i;
-					Utility.enrichService(responseObject["Results"].features[i], i);
+					Utility.enrichService(responseObject["Results"].features[i], i, Math.round(GpsManager.getDistanceFromGPSInM(responseObject["Results"].features[i].geometry.coordinates[1], responseObject["Results"].features[i].geometry.coordinates[0])));
 				}
 				if (responseObject["Results"].features[0].properties.distanceFromSearchCenter != null) {
 					responseObject["Results"].features.sort(function (a, b) {

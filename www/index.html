@@ -45,6 +45,7 @@ under the License.
     <!-- OPEN LAYERS 3.12-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,performance.now|always"></script>
     <script type="text/javascript" src="js/angular/angular.min.js"></script>
+	<script type="text/javascript" src="js/angular/angular-ui-router.min.js"></script>
 	<script type="text/javascript" src="js/angular/ng-cordova.js"></script>
 	<script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/init/jquery-1.11.0.min.js"></script>
@@ -305,15 +306,20 @@ under the License.
 				</div>
 			</div>
 			<div id="principalMenuInner">
-						<div ng-repeat="principalMenuButton in principalMenuButtons" class="principalMenuButton" data-index="{{index}}" ng-click="launchApp(principalMenuButton);">
-							<i ng-if="principalMenuButton.iconClass" class="{{principalMenuButton.iconClass}}" style="font-size:{{principalMenuButton.iconFontSize}};color: {{principalMenuButton.iconColor}};"></i ng-if="principalMenuButton.iconClass">
-							<img ng-if="principalMenuButton.imgSrc" style="height:{{imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
-							<b style="font-size:{{textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
-							<b class="textCaption" id="{{captionId}}"></b>
-						</div>
+				<div ng-repeat="principalMenuButton in principalMenuButtons track by principalMenuButton.captionId" class="principalMenuButton" data-index="{{index}}" ng-click="launchApp(principalMenuButton);">
+					<a pippo-ui-sref='dynamicModules'>
+						<i ng-if="principalMenuButton.iconClass" class="{{principalMenuButton.iconClass}}" style="font-size:{{principalMenuButton.iconFontSize}};color: {{principalMenuButton.iconColor}};"></i ng-if="principalMenuButton.iconClass">
+						<img ng-if="principalMenuButton.imgSrc" style="height:{{principalMenuButton.imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
+						<b style="font-size:{{principalMenuButton.textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
+						<b class="textCaption" id="{{principalMenuButton.captionId}}"></b>
+					</a>
+				</div>
 			</div>
 		</div>
      </div>
+	 <div id="container" class="container">
+		<div uui-view></div>
+	</div>
  
     <div id="testProdAPIAlert" class="testProdAlert" style="left: 10%; width: 15%; height: 32px;">API</div>
     <div id="testProdRecommendAlert" class="testProdAlert" style="left: 25%; width: 15%; height: 32px;">Rec</div>
@@ -345,6 +351,9 @@ under the License.
             </div>
         </div>
     </div>
+	<div id="container2" class="container">
+		<div ui-view></div>
+	</div>
     <div class="modal" id="sendPhotoAlbumModal" tabindex="-1"
          role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" style="width: 95%;">

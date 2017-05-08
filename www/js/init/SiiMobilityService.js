@@ -47,9 +47,9 @@
 		
 		function resetInterface(){
 			for (var i = this.menuToCheckArray.length - 1; i >= 0; i--) {
-				if (window[$scope.menuToCheckArray[i]] != null) {
-					if (window[$scope.menuToCheckArray[i]]["closeAll"] != null) {
-						window[$scope.menuToCheckArray[i]]["closeAll"]();
+				if (window[this.menuToCheckArray[i]] != null) {
+					if (window[this.menuToCheckArray[i]]["closeAll"] != null) {
+						window[this.menuToCheckArray[i]]["closeAll"]();
 					}
 				}
 			}
