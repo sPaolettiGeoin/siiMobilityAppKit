@@ -1,0 +1,60 @@
+<div id="healthCareMenuHeader" class="panel panel-default" style="position: absolute;right: 0px;left: 0px;border-radius: 0px;">
+	pippo
+	<div ng-show="showMap" id="healthCareMenuExpandHandler" class="grippyContainer grippyContainer-horizontal" style="text-align: center;">
+        <div class="grippy grippy-horizontal"></div>
+    </div>
+	qui
+    <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
+        <a ng-show="showMap" class="pull-right" onclick="HealthCare.hide();">
+            <i class="glyphicon glyphicon-remove"
+               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a ng-show="showMap" id="healthCareMenuExpand" class="pull-left" onclick="HealthCare.expandHealthCare();">
+            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <a ng-show="showMap" id="healthCareMenuCollapse" class="pull-left" onclick="HealthCare.collapseHealthCare();">
+            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
+        </a>
+        <b style="line-height: 52px;color: #333;">{{menuHeaderTitle}}</b>
+    </div>
+	quo
+</div>
+
+<div id="healthCareMenuInner" class="commonHalfMenuInner">
+qua
+    {{ datiAnagrafici.name }}
+	<div ng-show="!showMap" class="panel-heading">{{fieldset_characteristics}}</div>
+	<div ng-show="!showMap" class="panel-body">
+		<div ng-show="datiAnagrafici && !datiAnagrafici.inModification" class="col-xs-12">
+			<a class="pull-right" onclick="HealthCare.switchUpdateDatiAnagrafici(true);">
+				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
+			</a>
+		</div>
+		
+		<form name="datiAnagraficiForm" method="post" action="javascript: HealthCare.updateDatiAnagrafici();">
+		<div ng-show="datiAnagrafici && datiAnagrafici.inModification" class="row">
+			<div class="col-xs-6">{{fs_char_name}}: </div><div class="col-xs-6"><input id="name" value="{{ name }}"></input></div>
+		</div>
+		
+		<div ng-show="datiAnagrafici && datiAnagrafici.inModification" class="row">
+			<div class="col-xs-6"><button onclick="HealthCare.switchUpdateDatiAnagrafici(false);return false;">{{cancelButton}}</button></div>
+			<div class="col-xs-6"><button type="submit">{{modifyButton}}</button></div>
+		</div>
+		</form>
+	</div>
+	<div ng-show="!showMap" class="panel-heading">{{hints}}</div>
+	<div ng-show="!showMap" class="panel-body">
+	{{hint}}
+	</div>
+	<div class="panel-heading">{{healthAction}}</div>
+	<div class="panel-body">
+	<form>
+	<select id="healthActions" onchange="HealthCare.loadHealthAction();">
+		<option></option>
+			<option ng-repeat="healthOption in healthOptions" value="{{healthOption.key}}" {{healthOption.selected}}>{{healthOption.value}}</option>
+	</select>
+	</form>
+	{{healthHint}}
+	pipppo
+	</div>
+</div>
