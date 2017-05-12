@@ -12,6 +12,23 @@
 				//ViewManager.render(data, '#chooseLanguage', 'ChooseLanguage');
 			}
 		});
+		
+		$scope.ngDynamicModules = [
+			{
+				"iconClass": "glyphicon glyphicon-heart",
+				"iconFontSize": "35px",
+				"iconColor": "#660000",
+				"text": "Tieniti in forma",
+				"textFontSize": "38px",
+				"textColor": "#CC0000",
+				"captionId": "HealthCare",
+				"captionTextId": "moduleHealthCare",
+				"ribbon": true,
+				"ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+				"ribbonText":  "NEW",
+				"removed": false
+			  }
+		];
 		$scope.readWelcome = function() {
 			return Globalization.readWelcome();
 		};
@@ -218,8 +235,8 @@
 		},
 		
 		$scope.launchApp = function(principalMenuButton) {
-			$ocLazyLoad.load("ng-modules/healthCare/js/HealthCare.js").then(function() {
-				$state.go("dynamicModules");
+			$ocLazyLoad.load("ng-modules/" + principalMenuButton.captionId + "/js/" + principalMenuButton.captionId + ".js").then(function() {
+				$state.go(principalMenuButton.captionId);
 			}, function(e) {
 				console.log('errr');
 				console.error(e);

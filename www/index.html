@@ -311,6 +311,12 @@ under the License.
 					<b style="font-size:{{principalMenuButton.textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
 					<b class="textCaption" id="{{principalMenuButton.captionId}}"></b>
 				</div>
+				<div ng-repeat="ngDynamicModule in ngDynamicModules track by ngDynamicModule.captionId" class="principalMenuButton" ng-click="launchApp(ngDynamicModule);">
+					<i ng-if="ngDynamicModule.iconClass" class="{{ngDynamicModule.iconClass}}" style="font-size:{{ngDynamicModule.iconFontSize}};color: {{ngDynamicModule.iconColor}};"></i ng-if="ngDynamicModule.iconClass">
+					<img ng-if="ngDynamicModule.imgSrc" style="height:{{ngDynamicModule.imgHeight}};margin-bottom: 5px;" ng-src="{{ngDynamicModule.imgSrc}}">
+					<b style="font-size:{{ngDynamicModule.textFontSize}};color: {{textColor}}">{{ngDynamicModule.text}}</b>
+					<b class="textCaption" id="{{ngDynamicModule.captionId}}"></b>
+				</div>
 			</div>
 		</div>
 		<div id="container" class="container">

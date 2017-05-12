@@ -975,7 +975,7 @@
 						featureProjection: 'EPSG:3857'
 					}));
 
-					geometryStyle = new ol.style.Style({
+					var geometryStyle = new ol.style.Style({
 						fill: new ol.style.Fill({
 							color: 'rgba(120, 0, 170, 0.3)'
 						}),

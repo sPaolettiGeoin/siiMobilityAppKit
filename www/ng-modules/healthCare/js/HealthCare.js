@@ -1,10 +1,12 @@
 (function(){
 	'use strict';
-	console.log("dbg455");
+	
 	angular
 		.module('siiMobilityApp')
-		.controller('HealthCareCtrl', ['$scope', 'Globalization', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager', function($scope, Globalization, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
-		  
+		.controller('HealthCareCtrl', ['$scope', '$injector', '$ocLazyLoad', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager',
+		function($scope, $injector, $ocLazyLoad, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
+			var appoAPIClient = null;
+			
 		  $scope.datiAnagrafici = {
 			name: "",
 			sex: "",
@@ -15,8 +17,10 @@
 			sexOptions: function() {
 				var options = [];
 				options.length = 2;
-				options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === "M" ? "selected" : ""};
-				options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === "F" ? "selected" : ""};
+				//options[0] = {key: "M", value: Globalization.labels.healthCareMenu.options_sex_M, selected: this.sex === "M" ? "selected" : ""};
+				//options[1] = {key: "F", value: Globalization.labels.healthCareMenu.options_sex_F, selected: this.sex === "F" ? "selected" : ""};
+				options[0] = {key: "M", value: "Uomo", selected: this.sex === "M" ? "selected" : ""};
+				options[1] = {key: "F", value: "Donna", selected: this.sex === "F" ? "selected" : ""};
 				return options;
 			}
 		};
@@ -36,6 +40,7 @@
 			$scope.hint = "";
 			$scope.healthOptions = [];
 			$scope.init = function() {
+				/*
 				$scope.menuHeaderTitle = Globalization.labels.healthCareMenu.title;
 				$scope.fieldset_characteristics = Globalization.labels.healthCareMenu.characteristics;
 				$scope.fs_char_name = Globalization.labels.healthCareMenu.name;
@@ -47,23 +52,37 @@
 				$scope.modifyButton = Globalization.labels.healthCareMenu.modifyButton;
 				$scope.hints = Globalization.labels.healthCareMenu.hints;
 				$scope.healthAction = Globalization.labels.healthCareMenu.healthAction;
+				*/
+				$scope.menuHeaderTitle = "Tieniti in forma";
+				$scope.fieldset_characteristics = "Caratteristiche";
+				$scope.fs_char_name = "Nome";
+				$scope.fs_char_sex = "Sesso";
+				$scope.fs_char_weight = "Peso";
+				$scope.fs_char_age = "Eta'";
+				$scope.fs_char_height = "Altezza";
+				$scope.cancelButton = "Annulla";
+				$scope.modifyButton = "Modifica";
+				$scope.hints = "Suggerimenti";
+				$scope.healthAction = "Vorrei...";
 				
 				$scope.loadDatiAnagrafici();
 				$scope.show();
 				
-				$scope.getHint();
+				getHint();
 				getHealthOptions();
 			};
 			function doWork() {
-				console.log("dbg777");
-				PrincipalMenu.hide();
-				$scope.init();
-				//console.log("dbg880: " + document.getElementById("map").outerHTML);
-				
-				//
-				//$("#container").show();
-				//$("#container").show();
-				$("#map").hide();
+				$ocLazyLoad.load("ng-modules/HealthCare/js/AppoAPIClient.js").then(function() {
+					//appoAPIClient = service;
+					appoAPIClient = $injector.get("appoAPIClient");
+					console.log("dbg777: " + appoAPIClient);
+					PrincipalMenu.hide();
+					$scope.init();
+					//$("#map").hide();
+				}, function(e) {
+					console.log('errr');
+					console.error(e);
+				});
 			};
 			$scope.show = function () {
 				SiiMobilityService.resetInterface();
@@ -128,16 +147,19 @@
 			//callBack
 			$scope.errorQuery = function(error) {
 				console.log("dbg090: " + JSON.stringify(error));
-				navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
+				//navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
+				navigator.notification.alert("Errore", function() {}, "Errore");
 			};
 			$scope.loadDatiAnagrafici = function() {
 				$scope.datiAnagrafici.name = localStorage.getItem("name");
 				$scope.datiAnagrafici.sex = localStorage.getItem("sex");
 				if ($scope.datiAnagrafici.sex === "M") {
-					$scope.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_M;
+					//$scope.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_M;
+					$scope.datiAnagrafici.sexDescr = "Uomo";
 				}
 				else if ($scope.datiAnagrafici.sex === "F") {
-					$scope.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_F;
+					//$scope.datiAnagrafici.sexDescr = Globalization.labels.healthCareMenu.options_sex_F;
+					$scope.datiAnagrafici.sexDescr = "Donna";
 				}
 				
 				$scope.datiAnagrafici.weight = localStorage.getItem("weight");
@@ -162,7 +184,7 @@
 				$scope.switchUpdateDatiAnagrafici(false);
 			};
 			
-			$scope.getHint = function() {
+			function getHint() {
 				var actionQuery = "/recommender/health/";
 				actionQuery += "?" + $scope.componeDataQuery();
 				appoAPIClient.executeQuery(actionQuery, $scope.successQueryAction, $scope.errorQuery);
@@ -193,7 +215,6 @@
 				console.log("responseJson: " + responseJson);
 				var response = JSON.parse(responseJson);
 				if (response && response.status && response.status.error_code === 0) {
-					console.log("typeof response.data.journey: " + typeof response.data.journey);
 					$scope.showMap = typeof response.data.journey != "undefined";
 					//$scope.showMap = true;
 					//console.log("$scope.showMap: " + $scope.showMap);
@@ -226,11 +247,5 @@
 			};
 		
 		doWork();
-		  
-		  
-		  
-		  
-		  
-		  
 		}])
 })();
