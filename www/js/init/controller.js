@@ -1,7 +1,7 @@
 (function() {
 	var siiMobilityApp = angular.module('siiMobilityApp');
 
-	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, $state, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
+	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, $state, $ocLazyLoad, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
 		$.ajax({
 			url: RelativePath.jsonFolder + "languages.json",
 			async: false,
@@ -12,7 +12,6 @@
 				//ViewManager.render(data, '#chooseLanguage', 'ChooseLanguage');
 			}
 		});
-		//$scope.headerTitle = "pippo";
 		$scope.readWelcome = function() {
 			return Globalization.readWelcome();
 		};
@@ -27,8 +26,6 @@
 		$scope.$watch(function () {
 				return Globalization.labels;
 			},	function (labels) {
-				//console.log("dbg030");
-				//console.log("dbg040: " + labels);
 				if (Globalization.labels && Globalization.labels.principalMenu && Globalization.labels.principalMenu.headerTitle) {
 					$scope.headerTitle = Globalization.labels.principalMenu.headerTitle;
 				}
@@ -37,8 +34,6 @@
 		$scope.$watch(function () {
 				return PrincipalMenu.principalMenuButtons; 
 			},	function (principalMenuButtons) {
-				//console.log("dbg050");
-				//console.log("dbg060: " + principalMenuButtons);
 				$scope.principalMenuButtons = principalMenuButtons;
 		});
 
@@ -223,17 +218,12 @@
 		},
 		
 		$scope.launchApp = function(principalMenuButton) {
-			//console.log("dbg999: " + "_1");
-			//PrincipalMenu.hide();
-			$state.go("dynamicModules");
-				
-				
-			//console.log("dbg999: " + "_2");
-			//$injector.invoke(['HealthCare', function(service){service.doWork();}]);
-//			$state.go("dynamicModules");
-			
-			//HealthCare.doWork();
-			//principalMenuButton.callback
+			$ocLazyLoad.load("ng-modules/healthCare/js/HealthCare.js").then(function() {
+				$state.go("dynamicModules");
+			}, function(e) {
+				console.log('errr');
+				console.error(e);
+			});
 		},
 
 		close = function () {

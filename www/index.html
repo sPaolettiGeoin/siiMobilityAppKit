@@ -46,6 +46,7 @@ under the License.
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,performance.now|always"></script>
     <script type="text/javascript" src="js/angular/angular.min.js"></script>
 	<script type="text/javascript" src="js/angular/angular-ui-router.min.js"></script>
+	<script type="text/javascript" src="js/angular/ocLazyLoad.js"></script>
 	<script type="text/javascript" src="js/angular/ng-cordova.js"></script>
 	<script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/init/jquery-1.11.0.min.js"></script>
@@ -75,7 +76,6 @@ under the License.
 	<script type="text/javascript" src="js/lib/jquery-ui-1.12.1.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.fancytree-all.min.js"></script>
 	<script type="text/javascript" src="js/lib/md5-min.js"></script>
-	<script type="text/javascript" src="pippo/HealthCare.js"></script>
 
 </head>
 <body id="home" style="background-color: #000" ng-controller="SiiMobilityController">
@@ -306,17 +306,15 @@ under the License.
 			</div>
 			<div id="principalMenuInner">
 				<div ng-repeat="principalMenuButton in principalMenuButtons track by principalMenuButton.captionId" class="principalMenuButton" data-index="{{index}}" ng-click="launchApp(principalMenuButton);">
-					<a pippo-ui-sref='dynamicModules'>
-						<i ng-if="principalMenuButton.iconClass" class="{{principalMenuButton.iconClass}}" style="font-size:{{principalMenuButton.iconFontSize}};color: {{principalMenuButton.iconColor}};"></i ng-if="principalMenuButton.iconClass">
-						<img ng-if="principalMenuButton.imgSrc" style="height:{{principalMenuButton.imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
-						<b style="font-size:{{principalMenuButton.textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
-						<b class="textCaption" id="{{principalMenuButton.captionId}}"></b>
-					</a>
+					<i ng-if="principalMenuButton.iconClass" class="{{principalMenuButton.iconClass}}" style="font-size:{{principalMenuButton.iconFontSize}};color: {{principalMenuButton.iconColor}};"></i ng-if="principalMenuButton.iconClass">
+					<img ng-if="principalMenuButton.imgSrc" style="height:{{principalMenuButton.imgHeight}};margin-bottom: 5px;" ng-src="{{principalMenuButton.imgSrc}}">
+					<b style="font-size:{{principalMenuButton.textFontSize}};color: {{textColor}}">{{principalMenuButton.text}}</b>
+					<b class="textCaption" id="{{principalMenuButton.captionId}}"></b>
 				</div>
 			</div>
 		</div>
 		<div id="container" class="container">
-			<div ui-view>pippo555</div>
+			<div ui-view></div>
 		</div>
     </div>
     <div id="testProdAPIAlert" class="testProdAlert" style="left: 10%; width: 15%; height: 32px;">API</div>

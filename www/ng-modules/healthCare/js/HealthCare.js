@@ -1,6 +1,6 @@
 (function(){
 	'use strict';
-	
+	console.log("dbg455");
 	angular
 		.module('siiMobilityApp')
 		.controller('HealthCareCtrl', ['$scope', 'Globalization', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager', function($scope, Globalization, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
