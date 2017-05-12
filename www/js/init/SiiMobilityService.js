@@ -46,6 +46,7 @@
 		}
 		
 		function resetInterface(){
+			console.log("dbg456: " + this.menuToCheckArray.length);
 			for (var i = this.menuToCheckArray.length - 1; i >= 0; i--) {
 				if (window[this.menuToCheckArray[i]] != null) {
 					if (window[this.menuToCheckArray[i]]["closeAll"] != null) {

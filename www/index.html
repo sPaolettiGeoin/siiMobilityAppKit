@@ -57,7 +57,6 @@ under the License.
 	<script type="text/javascript" src="js/core/viewer/Globalization.js"></script>
 	<script type="text/javascript" src="js/core/viewer/ChooseLanguage.js"></script>
 	<script type="text/javascript" src="js/core/viewer/ChooseProfile.js"></script>
-	<script type="text/javascript" src="js/core/viewer/languageCtrl.js"></script>
 	<script type="text/javascript" src="js/core/viewer/PrincipalMenu.js"></script>
 	<script type="text/javascript" src="js/core/viewer/Loading.js"></script>
 	<script type="text/javascript" src="js/core/utility/Parameters.js"></script>
@@ -76,7 +75,7 @@ under the License.
 	<script type="text/javascript" src="js/lib/jquery-ui-1.12.1.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.fancytree-all.min.js"></script>
 	<script type="text/javascript" src="js/lib/md5-min.js"></script>
-	<script type="text/javascript" src="js/modules/healthCare/HealthCare.js"></script>
+	<script type="text/javascript" src="pippo/HealthCare.js"></script>
 
 </head>
 <body id="home" style="background-color: #000" ng-controller="SiiMobilityController">
@@ -316,11 +315,10 @@ under the License.
 				</div>
 			</div>
 		</div>
-     </div>
-	 <div id="container" class="container">
-		<div uui-view></div>
-	</div>
- 
+		<div id="container" class="container">
+			<div ui-view>pippo555</div>
+		</div>
+    </div>
     <div id="testProdAPIAlert" class="testProdAlert" style="left: 10%; width: 15%; height: 32px;">API</div>
     <div id="testProdRecommendAlert" class="testProdAlert" style="left: 25%; width: 15%; height: 32px;">Rec</div>
     <div id="testProdSensorAlert" class="testProdAlert" style="left: 40%; width: 15%; height: 32px;">Sens</div>
@@ -351,9 +349,6 @@ under the License.
             </div>
         </div>
     </div>
-	<div id="container2" class="container">
-		<div ui-view></div>
-	</div>
     <div class="modal" id="sendPhotoAlbumModal" tabindex="-1"
          role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" style="width: 95%;">

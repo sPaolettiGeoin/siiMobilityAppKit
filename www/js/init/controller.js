@@ -223,9 +223,14 @@
 		},
 		
 		$scope.launchApp = function(principalMenuButton) {
-			console.log("dbg999: " + "");
-			$injector.invoke(['HealthCare', function(service){service.doWork();}]);
+			//console.log("dbg999: " + "_1");
+			//PrincipalMenu.hide();
 			$state.go("dynamicModules");
+				
+				
+			//console.log("dbg999: " + "_2");
+			//$injector.invoke(['HealthCare', function(service){service.doWork();}]);
+//			$state.go("dynamicModules");
 			
 			//HealthCare.doWork();
 			//principalMenuButton.callback

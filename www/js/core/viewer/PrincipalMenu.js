@@ -200,7 +200,7 @@
 				var service = this;
 				
 				$('#principalMenu').hide(Parameters.hidePanelGeneralDuration);
-				//console.log("dbg060");
+				console.log("dbg060: " + Parameters.hidePanelGeneralDuration);
 				SiiMobilityService.setBackButtonListener();
 				service.open = false;
 			},
