@@ -150,12 +150,12 @@
 				
 				refreshMenu();
 			};
-			function updateDatiAnagrafici() {
-				localStorage.setItem("name", $("#name").val());
-				localStorage.setItem("sex", $("#sex").val());
-				localStorage.setItem("weight", $("#weight").val());
-				localStorage.setItem("age", $("#age").val());
-				localStorage.setItem("height", $("#height").val());
+			$scope.updateDatiAnagrafici = function() {
+				localStorage.setItem("name", $scope.datiAnagrafici.name);
+				localStorage.setItem("sex", $scope.datiAnagrafici.sex);
+				localStorage.setItem("weight", $scope.datiAnagrafici.weight);
+				localStorage.setItem("age", $scope.datiAnagrafici.age);
+				localStorage.setItem("height", $scope.datiAnagrafici.height);
 				
 				$scope.loadDatiAnagrafici();
 				

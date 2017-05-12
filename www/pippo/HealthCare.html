@@ -19,25 +19,58 @@
 </div>
 
 <div id="healthCareMenuInner" class="commonHalfMenuInner">
-    {{ datiAnagrafici.name }}
-	<div ng-show="!showMap" class="panel-heading">{{fieldset_characteristics}}</div>
-	<div ng-show="!showMap" class="panel-body">
-		<div ng-show="datiAnagrafici && !datiAnagrafici.inModification" class="col-xs-12">
+    
+	
+	
+	{{ datiAnagrafici.name }}
+	<div class="panel-heading">{{fieldset_characteristics}}</div>
+	<div class="panel-body">
+		<div class="col-xs-12" ng-show="!datiAnagrafici.inModification">
 			<a class="pull-right" ng-click="switchUpdateDatiAnagrafici(true);">
 				<i class="glyphicon glyphicon-pencil" style="float: right; color: #777; line-height: 52px;"></i>
 			</a>
 		</div>
 		
-		<form name="datiAnagraficiForm" method="post" ng-action="updateDatiAnagrafici();">
-		<div ng-show="datiAnagrafici && datiAnagrafici.inModification" class="row">
-			<div class="col-xs-6">{{fs_char_name}}: </div><div class="col-xs-6"><input id="name" value="{{ name }}"></input></div>
+		<div class="row" ng-show="datiAnagrafici.inModification">
+			<div class="col-xs-6">{{fs_char_name}}: </div>
+			<div class="col-xs-6"><input ng-model="datiAnagrafici.name"></input></div>
 		</div>
-		
-		<div ng-show="datiAnagrafici && datiAnagrafici.inModification" class="row">
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_sex}}: </div>
+			<div class="col-xs-6">
+			<span ng-show="!datiAnagrafici.inModification">{{ sexDescr }}</span>
+			<select id="sex" ng-show="datiAnagrafici.inModification" ng-options="sexOption as sexOption.value for sexOption in datiAnagrafici.sexOptions" ng-model="selectedSexOption">
+			</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_weight}}: </div>
+			<div class="col-xs-6">
+			<span ng-show="!datiAnagrafici.inModification">{{ weight }}</span>
+			<input ng-show="datiAnagrafici.inModification" id="weight" value="{{ weight }}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_age}}: </div>
+			<div class="col-xs-6">
+			<span ng-show="!datiAnagrafici.inModification">{{ age }}</span>
+			<input id="age" ng-show="datiAnagrafici.inModification" value="{{ age }}"></input>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">{{fs_char_height}}: </div>
+			<div class="col-xs-6">
+			<span ng-show="!datiAnagrafici.inModification">{{ height }}</span>
+			<input id="height" ng-show="datiAnagrafici.inModification" value="{{ height }}"></input>
+			</div>
+		</div>
+		<div class="row" ng-show="datiAnagrafici.inModification">
 			<div class="col-xs-6"><button ng-click="switchUpdateDatiAnagrafici(false);">{{cancelButton}}</button></div>
-			<div class="col-xs-6"><button type="submit">{{modifyButton}}</button></div>
+			<div class="col-xs-6"><button ng-click="updateDatiAnagrafici();">{{modifyButton}}</button></div>
 		</div>
-		</form>
+	
+	
+	
 	</div>
 	<div ng-show="!showMap" class="panel-heading">{{hints}}</div>
 	<div ng-show="!showMap" class="panel-body">

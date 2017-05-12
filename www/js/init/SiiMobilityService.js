@@ -38,40 +38,38 @@
 	    }
 		
 		function getMenuToCheckArray() {
-			return this.menuToCheckArray;
+			return service.menuToCheckArray;
 		}
 		
 		function addingMenuToCheck(menuToCheck){
-			this.menuToCheckArray.unshift(menuToCheck);
+			service.menuToCheckArray.unshift(menuToCheck);
 		}
 		
 		function resetInterface(){
-			console.log("dbg456: " + this.menuToCheckArray.length);
-			for (var i = this.menuToCheckArray.length - 1; i >= 0; i--) {
-				if (window[this.menuToCheckArray[i]] != null) {
-					if (window[this.menuToCheckArray[i]]["closeAll"] != null) {
-						window[this.menuToCheckArray[i]]["closeAll"]();
+			console.log("dbg456: " + service.menuToCheckArray.length);
+			for (var i = service.menuToCheckArray.length - 1; i >= 0; i--) {
+				if (window[service.menuToCheckArray[i]] != null) {
+					if (window[service.menuToCheckArray[i]]["closeAll"] != null) {
+						window[service.menuToCheckArray[i]]["closeAll"]();
 					}
 				}
 			}
 		}
 		
 		function onResize() {
-			console.log("dbg600: " + this);
-			console.log("dbg610: " + this.menuToCheckArray);
-			for (var i = 0; i < this.menuToCheckArray.length; i++) {
-				if (window[$scope.menuToCheckArray[i]] != null) {
-					if (window[$scope.menuToCheckArray[i]]["refreshMenuPosition"] != null) {
-						window[$scope.menuToCheckArray[i]]["refreshMenuPosition"]();
+			for (var i = 0; i < service.menuToCheckArray.length; i++) {
+				if (window[service.menuToCheckArray[i]] != null) {
+					if (window[service.menuToCheckArray[i]]["refreshMenuPosition"] != null) {
+						window[service.menuToCheckArray[i]]["refreshMenuPosition"]();
 					}
 				}
 			}
 		}
 		
 		function removingMenuToCheck(menuToCheck) {
-			var index = this.menuToCheckArray.indexOf(menuToCheck);
+			var index = service.menuToCheckArray.indexOf(menuToCheck);
 			if (index != -1) {
-				this.menuToCheckArray.splice(this.menuToCheckArray.indexOf(menuToCheck), 1);
+				service.menuToCheckArray.splice(service.menuToCheckArray.indexOf(menuToCheck), 1);
 			}
 		}
 		
