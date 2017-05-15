@@ -27,6 +27,19 @@
 				"ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
 				"ribbonText":  "NEW",
 				"removed": false
+			  },
+			  {
+				"iconClass": "glyphicon glyphicon-heart",
+				"iconFontSize": "35px",
+				"iconColor": "#660000",
+				"text": "Stile di guida",
+				"textFontSize": "38px",
+				"textColor": "#CC0000",
+				"captionId": "GuideStyle",
+				"ribbon": true,
+				"ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+				"ribbonText":  "NEW",
+				"removed": false
 			  }
 		];
 		$scope.readWelcome = function() {
@@ -235,7 +248,7 @@
 		},
 		
 		$scope.launchApp = function(principalMenuButton) {
-			$ocLazyLoad.load("ng-modules/" + principalMenuButton.captionId + "/js/" + principalMenuButton.captionId + ".js").then(function() {
+			$ocLazyLoad.load("ng-modules/" + principalMenuButton.captionId + "/js/content.js").then(function() {
 				$state.go(principalMenuButton.captionId);
 			}, function(e) {
 				console.log('errr');

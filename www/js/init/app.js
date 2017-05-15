@@ -7,4 +7,8 @@ angular.module('siiMobilityApp')
         url: "HealthCare",
         templateUrl: 'ng-modules/HealthCare/HealthCare.html'
     })
+	.state('GuideStyle', {
+        url: "GuideStyle",
+        templateUrl: 'ng-modules/GuideStyle/content.html'
+    })
 });

@@ -96,6 +96,9 @@
         },
         "org.disit.siiMobile.backgroundService": {
             "PACKAGE_NAME": "org.disit.siiMobilityAppKit"
+        },
+        "cordova-plugin-bluetooth-serial": {
+            "PACKAGE_NAME": "org.disit.siiMobilityAppKit"
         }
     },
     "dependent_plugins": {
