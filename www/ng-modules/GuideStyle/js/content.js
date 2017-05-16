@@ -6,13 +6,13 @@
 		.controller('GuideStyleCtrl', ['$scope', '$injector', '$ocLazyLoad', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager',
 		function($scope, $injector, $ocLazyLoad, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
 			$scope.varName = "GuideStyle";
-			$scope.macAddress = "2C:01:00:01:87:5E";
+			$scope.selectedDevice = {index: -1};
 			$scope.message = "";
 			
 			function doWork() {
 				PrincipalMenu.hide();
 				init();
-				$("#map").hide();
+				//$("#map").hide();
 			};
 			
 			function init() {
@@ -48,7 +48,7 @@
 			
 			function show () {
 				SiiMobilityService.resetInterface();
-				//MapManager.showMenuReduceMap("#" + $scope.idMenu);
+				MapManager.showMenuReduceMap("#" + $scope.idMenu);
 				//$("#" + $scope.idMenu + "Expand").hide();
 				$scope.open = true;
 				InfoManager.addingMenuToManage($scope.varName);
@@ -56,6 +56,9 @@
 				SiiMobilityService.setBackButtonListener();
 				//refreshMenu();
 				//$scope.expandHealthCare();
+				Utility.expandMenu("#" + $scope.varName,
+								   "#" + $scope.varName + "Expand",
+								   "#" + $scope.varName + "Collapse");
 			};
 			
 			$scope.manageConnection = function() {
@@ -66,11 +69,11 @@
 					// if not connected, do this:
 					// clear the screen and display an attempt to connect
 					clear();
-					display("Attempting to connect to " + $scope.macAddress + ". " +
+					display("Attempting to connect to " + $scope.devices[$scope.selectedDevice.index].address + ". " +
 						"Make sure the serial port is open on the target device.");
 					// attempt to connect:
 					bluetoothSerial.connect(
-						$scope.macAddress,  // device to connect to
+						$scope.devices[$scope.selectedDevice.index].address,  // device to connect to
 						openPort,    // start listening if you succeed
 						showError    // show the error if you fail
 					);
@@ -95,24 +98,26 @@
 			};
 			
 			function openPort() {
-				var afterReset = function(data) {
+				var afterSubscription = function(data) {
 					var setProtocol = function(data) {
 						display(data);
 						
 						var readSpeed = function(data) {
 							display(data);
 						}
+						console.log("dbg066");
 						bluetoothSerial.write('010D\r', readSpeed, showError);
 					}
-					bluetoothSerial.write('atsp0\r', setProtocol, showError);
+					console.log("dbg064");
+					bluetoothSerial.write('atz\r', setProtocol, showError);
 				}
 				// if you get a good Bluetooth serial connection:
-				display("Connected to: " + $scope.macAddress);
+				display("Connected to: " + $scope.devices[$scope.selectedDevice.index].address);
 				// change the button's name:
 				$("#connectButton").innerHTML = "Disconnect";
 				$scope.canConnect = true;
-				
-				bluetoothSerial.write('atz\r', afterReset, showError);
+				console.log("dbg062");
+				bluetoothSerial.subscribe('\r', afterSubscription, showError);
 			};
 
 		/*
@@ -120,7 +125,7 @@
 		*/
 			function closePort() {
 				// if you get a good Bluetooth serial connection:
-				display("Disconnected from: " + $scope.macAddress);
+				display("Disconnected from: " + $scope.devices[$scope.selectedDevice.index].address);
 				// change the button's name:
 				$("#connectButton").innerHTML = "Connect";
 				// unsubscribe from listening:
@@ -138,6 +143,7 @@
 			};
 
 			function display(message) {
+				console.log("dbgxxx: " + message);
 				if (!$scope.message) {
 					$scope.message = "";
 				}

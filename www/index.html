@@ -87,7 +87,7 @@ under the License.
             </video>
         </div>
         <nav id="navbar" class="navbar navbar-default navbar-fixed-top" style="z-index: 1000">
-            <a class="navbar-brand ui-link" onclick="PrincipalMenu.show();" href="#" style="padding-right: 5px;"><img src="img/km4city.png" width="40" height="40"></a>
+            <a class="navbar-brand ui-link" ng-click="show();" href="#" style="padding-right: 5px;"><img src="img/km4city.png" width="40" height="40"></a>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown" id="dropdownThreeVertical">
                     <a class="dropdown-toggle navbar-text"
@@ -288,7 +288,7 @@ under the License.
 			</style>
 			<div class="panel panel-default">
 				<div class="panel-heading" style="height: 55px;padding-left: 7px; padding-top: 1px;">
-					<a id="principalMenuModifyMenuButton" class="pull-right" onclick="PrincipalMenu.modifyPrincipalMenu();">
+					<a id="principalMenuModifyMenuButton" class="pull-right" ng-click="modifyPrincipalMenu();">
 						<i class="glyphicon glyphicon-pencil"
 						   style="float: right; color: #777; line-height: 52px;"></i>
 					</a>
@@ -300,7 +300,7 @@ under the License.
 						<i class="glyphicon glyphicon-repeat"
 						   style="float: right; color: #777; line-height: 52px;"></i>
 					</a>
-					<img src="img/km4city.png" width="40" height="40" onclick="PrincipalMenu.clickOnLogo();"/>
+					<img src="img/km4city.png" width="40" height="40" ng-click="clickOnLogo();"/>
 					<b id="principalMenuHeaderTitle" style="line-height: 2.5;margin-left: 10px">{{headerTitle}}</b>
 				</div>
 			</div>

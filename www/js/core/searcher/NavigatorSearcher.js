@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('NavigatorSearcher', NavigatorSearcher)
 	
-	NavigatorSearcher.$inject = ['Utility', 'Globalization'];
-	function NavigatorSearcher(Utility, Globalization) {
+	NavigatorSearcher.$inject = ['Utility', 'Globalization', 'MapManager'];
+	function NavigatorSearcher(Utility, Globalization, MapManager) {
 		var NavigatorSearcher = {
 
 			searchInterval: null,

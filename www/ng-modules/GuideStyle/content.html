@@ -5,7 +5,7 @@
 	</div>
 	<div ng-show="devices">Lista device collegati.
 		<div ng-repeat="device in devices">
-			<input type="radio" name="device" value="device.address" ng-model="selectedDevice">{{device.address}}
+			<input type="radio" name="device" ng-value="$index" ng-model="selectedDevice.index">{{device.address}}
 		</div>
 	</div>
 	<div>{{message}}</div>

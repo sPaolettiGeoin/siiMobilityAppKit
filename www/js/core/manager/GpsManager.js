@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('GpsManager', GpsManager)
 	
-	GpsManager.$inject = ['Parameters', 'Globalization'];
-	function GpsManager(Parameters, Globalization) {
+	GpsManager.$inject = ['Parameters', 'Globalization', 'MapManager'];
+	function GpsManager(Parameters, Globalization, MapManager) {
 		var service = {};
 
 		service.checkGPS = null;

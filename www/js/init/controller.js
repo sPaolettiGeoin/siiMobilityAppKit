@@ -263,6 +263,18 @@
 		// Update DOM on a Received Event
 		receivedEvent = function (id) { }
 		
+		$scope.show = function() {
+			PrincipalMenu.show();
+		}
+		
+		$scope.modifyPrincipalMenu = function() {
+			PrincipalMenu.modifyPrincipalMenu();
+		}
+		
+		$scope.clickOnLogo = function() {
+			PrincipalMenu.clickOnLogo();
+		}
+		
 		bindEvents();
 	});
 })();
