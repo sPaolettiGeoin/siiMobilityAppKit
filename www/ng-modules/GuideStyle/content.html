@@ -1,7 +1,7 @@
 <div ng-controller="GuideStyleCtrl" class="app">
 	<b style="line-height: 52px;color: #333;">{{menuHeaderTitle}}</b>
 	<div id="ui">
-		<input type="button" ng-enabled="canConnect" id="connectButton" value="Connect" ng-click="manageConnection();">
+		<input type="button" ng-enabled="canConnect" value="{{buttonText}}" ng-click="manageConnection();">
 	</div>
 	<div ng-show="devices">Lista device collegati.
 		<div ng-repeat="device in devices">

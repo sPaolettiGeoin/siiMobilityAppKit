@@ -8,6 +8,7 @@
 			$scope.varName = "GuideStyle";
 			$scope.selectedDevice = {index: -1};
 			$scope.message = "";
+			$scope.buttonText = "Connect";
 			
 			var callings = [
 				{
@@ -26,19 +27,9 @@
 			function init() {
 				$scope.menuHeaderTitle = "Stile di guida";
 				
-				var deferred = $q.defer();
-				bluetoothSerial.isEnabled(
-					deferred.resolve,
-					function() {display("Bluetooth is not enabled.")}
-				);
-				var promise = deferred.promise;
+				var promise = setCall(bluetoothSerial.isEnabled);
 				promise.then(function(data) {
-					deferred = $q.defer();
-					bluetoothSerial.list(
-						deferred.resolve,
-						function(error) {display(JSON.stringify(error));}
-					);
-					var promise = deferred.promise;
+					promise = setCall(bluetoothSerial.list);
 					promise.then(function(results) {
 						$scope.devices = results;
 						$scope.canConnect = $scope.devices && typeof $scope.devices.length != "undefined";
@@ -54,9 +45,14 @@
 				show();
 			};
 			
-			function doCall(method) {
+			function setCall(method, param) {
 				var deferred = $q.defer();
-				method(deferred.resolve, deferred.reject);
+				if (!param) {
+					method(deferred.resolve, deferred.reject);
+				}
+				else {
+					method(param, deferred.resolve, deferred.reject);
+				}
 				return deferred.promise;
 			}
 			
@@ -76,93 +72,88 @@
 			};
 			
 			$scope.manageConnection = function() {
-				// connect() will get called only if isConnected() (below)
-				// returns failure. In other words, if not connected, then connect:
-				var connect = function () {
-					$scope.canConnect = false;
-					// if not connected, do this:
-					// clear the screen and display an attempt to connect
-					clear();
-					display("Attempting to connect to " + $scope.devices[$scope.selectedDevice.index].address + ". " +
-						"Make sure the serial port is open on the target device.");
-					// attempt to connect:
-					bluetoothSerial.connect(
-						$scope.devices[$scope.selectedDevice.index].address,  // device to connect to
-						openPort,    // start listening if you succeed
-						showError    // show the error if you fail
-					);
-				};
-
-				// disconnect() will get called only if isConnected() (below)
-				// returns success  In other words, if  connected, then disconnect:
-				var disconnect = function () {
-					display("attempting to disconnect");
-					// if connected, do this:
-					bluetoothSerial.disconnect(
-						closePort,     // stop listening to the port
-						showError      // show the error if you fail
-					);
-				};
-
-				// here's the real action of the manageConnection function:
 				if ($scope.canConnect) {
-					bluetoothSerial.isConnected(disconnect, connect);
+					var promise = setCall(bluetoothSerial.isConnected);
+					promise.then(function(data) {
+						display("attempting to disconnect");
+						// if connected, do this:
+						bluetoothSerial.disconnect(
+							closePort,     // stop listening to the port
+							showError      // show the error if you fail
+						);
+						promise = setCall(bluetoothSerial.disconnect);
+						promise.then(function(data) {
+							display("Disconnected from: " + $scope.devices[$scope.selectedDevice.index].address);
+							// change the button's name:
+							$scope.buttonText = "Connect";
+							// unsubscribe from listening:
+							promise = setCall(bluetoothSerial.unsubscribe);
+							promise.then(function(data) {
+								display(data);
+							},
+							function(error) {
+								showError(error);
+							});
+						},
+						function(error) {
+							showError(error);
+						});
+					},
+					function(error) {
+						$scope.canConnect = false;
+						// if not connected, do this:
+						// clear the screen and display an attempt to connect
+						clear();
+						display("Attempting to connect to " + $scope.devices[$scope.selectedDevice.index].address + ". " +
+							"Make sure the serial port is open on the target device.");
+						// attempt to connect:
+						promise = setCall(bluetoothSerial.connect, $scope.devices[$scope.selectedDevice.index].address);
+						promise.then(function(data) {
+							openPort();
+						},
+						function(error) {
+							showError(error);
+						});
+					});
 				}
-				console.log("dbg030");
 			};
 			
-			function doCall(method, success) {
-				var deferred = $q.defer();
-				
-				indexCalling++;
-				bluetoothSerial.write(callings[indexCalling].message + '\r', deferred.resolve, showError);
-				method
-				
-				return doCall.promise;
-			}
-			
 			function openPort() {
-				var afterSubscription = function(data) {
-					var setProtocol = function(data) {
-						display(data);
-						
-						var readSpeed = function(data) {
-							display(data);
-						}
-						console.log("dbg066");
-						bluetoothSerial.write('010D\r', readSpeed, showError);
-					}
-					console.log("dbg064");
-					bluetoothSerial.write('atz\r', setProtocol, showError);
-				}
 				// if you get a good Bluetooth serial connection:
 				display("Connected to: " + $scope.devices[$scope.selectedDevice.index].address);
 				// change the button's name:
-				$("#connectButton").innerHTML = "Disconnect";
+				$scope.buttonText = "Disconnect";
 				$scope.canConnect = true;
 				console.log("dbg062");
-				bluetoothSerial.subscribe('\r', afterSubscription, showError);
-			};
-
-		/*
-			unsubscribes from any Bluetooth serial listener and changes the button:
-		*/
-			function closePort() {
-				// if you get a good Bluetooth serial connection:
-				display("Disconnected from: " + $scope.devices[$scope.selectedDevice.index].address);
-				// change the button's name:
-				$("#connectButton").innerHTML = "Connect";
-				// unsubscribe from listening:
-				bluetoothSerial.unsubscribe(
-						function (data) {
+				
+				var promise = setCall(bluetoothSerial.subscribe, '\r');
+				promise.then(function(data) {
+					console.log("dbg064");
+					
+					promise = setCall(bluetoothSerial.write, 'atz\r');
+					promise.then(function(data) {
+						display(data);
+						
+						console.log("dbg066");
+						
+						promise = setCall(bluetoothSerial.write, '010D\r');
+						promise.then(function(data) {
 							display(data);
 						},
-						showError
-				);
+						function (data) {
+							showError(error);
+						});
+					},
+					function(error) {
+						showError(error);
+					});
+				},
+				function(error) {
+					showError(error);
+				});
 			};
 			
 			function showError(error) {
-				console.log("dbg099: " + error);
 				display(error);
 			};
 
