@@ -3,11 +3,19 @@
 	
 	angular
 		.module('siiMobilityApp')
-		.controller('GuideStyleCtrl', ['$scope', '$injector', '$ocLazyLoad', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager',
-		function($scope, $injector, $ocLazyLoad, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
+		.controller('GuideStyleCtrl', ['$scope', '$injector', '$ocLazyLoad', '$q', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager',
+		function($scope, $injector, $ocLazyLoad, $q, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
 			$scope.varName = "GuideStyle";
 			$scope.selectedDevice = {index: -1};
 			$scope.message = "";
+			
+			var callings = [
+				{
+					action: "reset",
+					message: "atz"
+				}
+			];
+			var indexCalling = -1;
 			
 			function doWork() {
 				PrincipalMenu.hide();
@@ -18,33 +26,39 @@
 			function init() {
 				$scope.menuHeaderTitle = "Stile di guida";
 				
-				var listPorts = function() {
-					// list the available BT ports:
-					bluetoothSerial.list(
-						function(results) {
-							//app.display(JSON.stringify(results));
-							$scope.devices = results;
-							$scope.canConnect = $scope.devices && typeof $scope.devices.length != "undefined";
-						},
-						function(error) {
-							display(JSON.stringify(error));
-						}
-					);
-				}
-
-				// if isEnabled returns failure, this function is called:
-				var notEnabled = function() {
-					display("Bluetooth is not enabled.")
-				}
-
-				 // check if Bluetooth is on:
+				var deferred = $q.defer();
 				bluetoothSerial.isEnabled(
-					listPorts,
-					notEnabled
+					deferred.resolve,
+					function() {display("Bluetooth is not enabled.")}
 				);
+				var promise = deferred.promise;
+				promise.then(function(data) {
+					deferred = $q.defer();
+					bluetoothSerial.list(
+						deferred.resolve,
+						function(error) {display(JSON.stringify(error));}
+					);
+					var promise = deferred.promise;
+					promise.then(function(results) {
+						$scope.devices = results;
+						$scope.canConnect = $scope.devices && typeof $scope.devices.length != "undefined";
+					},
+					function (error) {
+						display(JSON.stringify(error));
+					});
+				},
+				function(error) {
+					showError(error);
+				});
 				
 				show();
 			};
+			
+			function doCall(method) {
+				var deferred = $q.defer();
+				method(deferred.resolve, deferred.reject);
+				return deferred.promise;
+			}
 			
 			function show () {
 				SiiMobilityService.resetInterface();
@@ -96,6 +110,16 @@
 				}
 				console.log("dbg030");
 			};
+			
+			function doCall(method, success) {
+				var deferred = $q.defer();
+				
+				indexCalling++;
+				bluetoothSerial.write(callings[indexCalling].message + '\r', deferred.resolve, showError);
+				method
+				
+				return doCall.promise;
+			}
 			
 			function openPort() {
 				var afterSubscription = function(data) {
