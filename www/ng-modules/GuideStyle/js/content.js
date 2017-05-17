@@ -26,6 +26,17 @@
 				]
 			}
 			
+			var stateCallings = {
+				actualIndex: -1,
+				actions:
+				[
+					{
+						actionName: "reading state",
+						method: bluetoothSerial.isConnected
+					}
+				]
+			}
+			
 			var connectionCallings = {
 				actualIndex: -1,
 				actions:
@@ -94,24 +105,16 @@
 			function init() {
 				var nextCalling = getNextAction(initCallings);
 				var promise = setCall(nextCalling);
-				console.log("dbg promise: " + promise);
+				
 				promise.then(function(response) {
-					console.log("Send action '" + nextCalling.actionName + "' with response '" + response + "'");
+					//console.log("Send action '" + nextCalling.actionName + "' with response '" + response + "'");
 					nextCalling = getNextAction(initCallings);
 					promise = setCall(nextCalling);
 					promise.then(function(results) {
-						console.log("Send action '" + nextCalling.actionName + "' with response '" + results + "'");
+						//console.log("Send action '" + nextCalling.actionName + "' with response '" + results + "'");
 						$scope.devices = results;
 						$scope.canConnect = $scope.devices && typeof $scope.devices.length != "undefined";
-					},
-					function (error) {
-						console.log("dbg999: " + error);
-						display(JSON.stringify(error));
 					});
-				},
-				function(error) {
-					console.log("dbg998: " + error);
-					showError(error);
 				});
 				
 				show();
@@ -119,8 +122,6 @@
 			
 			function setCall(objectCall, dynamicParam) {
 				console.log("Prepare call to " + objectCall.actionName);
-				console.log("objectCall.method: " + objectCall.method);
-				console.log("bluetoothSerial is null: " + bluetoothSerial == null);
 				
 				var param = null;
 				if (dynamicParam) {
@@ -132,12 +133,15 @@
 
 				var deferred = $q.defer();
 				if (!param) {
-					objectCall.method(deferred.resolve, deferred.reject);
+					objectCall.method(deferred.resolve, showError);
 				}
 				else {
-					objectCall.method(param, deferred.resolve, deferred.reject);
+					objectCall.method(param, deferred.resolve, showError);
 				}
-				console.log("dbg qui si arriva?");
+				deferred.promise.then(function(response) {
+					console.log("Sent action '" + objectCall.actionName + "' with response '" + response + "'");
+					return response;
+				});
 				return deferred.promise;
 			}
 			
@@ -159,80 +163,76 @@
 			$scope.manageConnection = function() {
 				if ($scope.canConnect) {
 					var device = $scope.devices[$scope.selectedDevice.index].address;
-					var promise = setCall(bluetoothSerial.isConnected);
-					promise.then(function(isConected) {
-						var nextCalling = getNextAction(disconnectionCallings);
-						promise = setCall(nextCalling);
-						promise.then(function(data) {
-							display("Disconnected from: " + device);
-							// change the button's name:
-							$scope.buttonText = "Connect";
-							// unsubscribe from listening:
-							nextCalling = getNextAction(disconnectionCallings);
-							promise = setCall(nextCalling);
-							promise.then(function(data) {
-								display(data);
-							},
-							function(error) {
-								showError(error);
-							});
-						},
-						function(error) {
-							showError(error);
-						});
-					},
-					function(isDisconnected) {
-						$scope.canConnect = false;
-						clear();
-						
-						display("Attempting to connect to " + device + ". Make sure the serial port is open on the target device.");
-						// attempt to connect:
-						var nextCalling = getNextAction(connectionCallings);
-						console.log("dbg333: " + nextCalling);
-						promise = setCall(nextCalling, device);
-						promise.then(function(data) {
-							display("Connected to: " + device);
-							// change the button's name:
-							$scope.buttonText = "Disconnect";
-							$scope.canConnect = true;
-							console.log("dbg062");
-							
-							nextCalling = getNextAction(connectionCallings);
-							promise = setCall(nextCalling);
-							promise.then(function(data) {
-								console.log("dbg064. Received: " + data);
-								clear();
-								if (new RegExp("^41 .*").test(data)) {
-									var bytes = data.split(" ");
-									if (bytes && bytes.length >= 3) {
-										var absTemp = parseInt(bytes[2], 16);
-										var realTemp = absTemp - 40;
-										display("Engine temp: " + realTemp);
-									}
-									else {
-										display("Engine temp: " + "something wrong");
-									}
-								}
-							},
-							function(error) {
-								showError(error);
-							});
-						},
-						function(error) {
-							showError(error);
-						});
+					var nextCalling = getNextAction(stateCallings);
+					var promise = setCall(nextCalling, device);
+					promise.then(function(state) {
+						console.log('state === "Not connected": ' + (state === "Not connected."));
+						if (state === "Not connected.") {
+							openConnection();
+						}
+						else {
+							closeConnection();
+						}
 					});
 				}
 			};
+			
+			function openConnection() {
+				var device = $scope.devices[$scope.selectedDevice.index].address;
+				$scope.canConnect = false;
+				clear();
+				
+				display("Attempting to connect to " + device + ". Make sure the serial port is open on the target device.");
+				// attempt to connect:
+				var nextCalling = getNextAction(connectionCallings);
+				var promise = setCall(nextCalling, device);
+				promise.then(function(data) {
+					display("Connected to: " + device);
+					// change the button's name:
+					$scope.buttonText = "Disconnect";
+					$scope.canConnect = true;
+					
+					nextCalling = getNextAction(connectionCallings);
+					promise = setCall(nextCalling);
+					promise.then(function(data) {
+						clear();
+						if (new RegExp("^41 .*").test(data)) {
+							var bytes = data.split(" ");
+							if (bytes && bytes.length >= 3) {
+								var absTemp = parseInt(bytes[2], 16);
+								var realTemp = absTemp - 40;
+								display("Engine temp: " + realTemp);
+							}
+							else {
+								display("Engine temp: " + "something wrong");
+							}
+						}
+					});
+				});
+			}
+			
+			function closeConnection() {
+				var device = $scope.devices[$scope.selectedDevice.index].address;
+				var nextCalling = getNextAction(disconnectionCallings);
+				var promise = setCall(nextCalling);
+				promise.then(function(data) {
+					display("Disconnected from: " + device);
+					// change the button's name:
+					$scope.buttonText = "Connect";
+					// unsubscribe from listening:
+					nextCalling = getNextAction(disconnectionCallings);
+					promise = setCall(nextCalling);
+					promise.then(function(data) {
+						display(data);
+					});
+				});
+			}
 			
 			$scope.readTemp = function() {
 				var nextCalling = getNextAction(tempCallings);
 				var promise = setCall(nextCalling);
 				promise.then(function(data) {
 					display(data);
-				},
-				function(error) {
-					showError(error);
 				});
 			}
 			
