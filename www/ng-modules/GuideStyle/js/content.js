@@ -11,63 +11,6 @@
 			$scope.message = "";
 			$scope.buttonText = "Connect";
 			
-			var initCallings = {
-				actualIndex: -1,
-				actions:
-				[
-					{
-						actionName: "ReadBTState",
-						method: bluetoothSerial.isEnabled
-					},
-					{
-						actionName: "ListDevices",
-						method: bluetoothSerial.list
-					}
-				]
-			}
-			
-			var stateCallings = {
-				actualIndex: -1,
-				actions:
-				[
-					{
-						actionName: "reading state",
-						method: bluetoothSerial.isConnected
-					}
-				]
-			}
-			
-			var connectionCallings = {
-				actualIndex: -1,
-				actions:
-				[
-					{
-						actionName: "attempting to connect",
-						method: bluetoothSerial.connect
-					},
-					{
-						actionName: "subscribe",
-						method: bluetoothSerial.subscribe,
-						message: "\r"
-					}
-				]
-			}
-			
-			var disconnectionCallings = {
-				actualIndex: -1,
-				actions:
-				[
-					{
-						actionName: "attempting to disconnect",
-						method: bluetoothSerial.disconnect
-					},
-					{
-						actionName: "unsubscribe",
-						method: bluetoothSerial.unsubscribe
-					}
-				]
-			}
-			
 			//Engine coolant temperature
 			var tempCallings = {
 				actualIndex: -1,
@@ -91,11 +34,6 @@
 				]
 			}
 			
-			function getNextAction(typeCallings) {
-				typeCallings.actualIndex++;
-				return typeCallings.actions[typeCallings.actualIndex];
-			}
-			
 			function doWork() {
 				PrincipalMenu.hide();
 				init();
@@ -103,15 +41,11 @@
 			};
 			
 			function init() {
-				var nextCalling = getNextAction(initCallings);
-				var promise = setCall(nextCalling);
+				var promise = setCall(bluetoothSerial.isEnabled, "readBTState");
 				
 				promise.then(function(response) {
-					//console.log("Send action '" + nextCalling.actionName + "' with response '" + response + "'");
-					nextCalling = getNextAction(initCallings);
-					promise = setCall(nextCalling);
+					promise = setCall(bluetoothSerial.list, "listOfDevices");
 					promise.then(function(results) {
-						//console.log("Send action '" + nextCalling.actionName + "' with response '" + results + "'");
 						$scope.devices = results;
 						$scope.canConnect = $scope.devices && typeof $scope.devices.length != "undefined";
 					});
@@ -120,26 +54,22 @@
 				show();
 			};
 			
-			function setCall(objectCall, dynamicParam) {
-				console.log("Prepare call to " + objectCall.actionName);
+			function setCall(methodToCall, action, param) {
+				var msg = "Prepare call '" + action + "'";
+				if (typeof param != "undefined") {
+					msg += " with param: " + param;
+				}
+				console.log(msg);
 				
-				var param = null;
-				if (dynamicParam) {
-					param = dynamicParam;
-				}
-				else if (objectCall.message) {
-					param = objectCall.message;
-				}
-
 				var deferred = $q.defer();
 				if (!param) {
-					objectCall.method(deferred.resolve, showError);
+					methodToCall(deferred.resolve, showError);
 				}
 				else {
-					objectCall.method(param, deferred.resolve, showError);
+					methodToCall(param, deferred.resolve, showError);
 				}
 				deferred.promise.then(function(response) {
-					console.log("Sent action '" + objectCall.actionName + "' with response '" + response + "'");
+					console.log("Response from call '" + action + "': '" + response + "'");
 					return response;
 				});
 				return deferred.promise;
@@ -163,10 +93,8 @@
 			$scope.manageConnection = function() {
 				if ($scope.canConnect) {
 					var device = $scope.devices[$scope.selectedDevice.index].address;
-					var nextCalling = getNextAction(stateCallings);
-					var promise = setCall(nextCalling, device);
+					var promise = setCall(bluetoothSerial.isConnected, "readDeviceState", device);
 					promise.then(function(state) {
-						console.log('state === "Not connected": ' + (state === "Not connected."));
 						if (state === "Not connected.") {
 							openConnection();
 						}
@@ -184,16 +112,14 @@
 				
 				display("Attempting to connect to " + device + ". Make sure the serial port is open on the target device.");
 				// attempt to connect:
-				var nextCalling = getNextAction(connectionCallings);
-				var promise = setCall(nextCalling, device);
+				var promise = setCall(bluetoothSerial.connect, "connect", device);
 				promise.then(function(data) {
 					display("Connected to: " + device);
 					// change the button's name:
 					$scope.buttonText = "Disconnect";
 					$scope.canConnect = true;
 					
-					nextCalling = getNextAction(connectionCallings);
-					promise = setCall(nextCalling);
+					promise = setCall(bluetoothSerial.subscribe, "subscribe", '\r');
 					promise.then(function(data) {
 						clear();
 						if (new RegExp("^41 .*").test(data)) {
@@ -213,15 +139,13 @@
 			
 			function closeConnection() {
 				var device = $scope.devices[$scope.selectedDevice.index].address;
-				var nextCalling = getNextAction(disconnectionCallings);
-				var promise = setCall(nextCalling);
+				var promise = setCall(bluetoothSerial.disconnect, "disconnect");
 				promise.then(function(data) {
 					display("Disconnected from: " + device);
 					// change the button's name:
 					$scope.buttonText = "Connect";
 					// unsubscribe from listening:
-					nextCalling = getNextAction(disconnectionCallings);
-					promise = setCall(nextCalling);
+					promise = setCall(bluetoothSerial.unsubscribe, "unsubscribe");
 					promise.then(function(data) {
 						display(data);
 					});
@@ -229,11 +153,8 @@
 			}
 			
 			$scope.readTemp = function() {
-				var nextCalling = getNextAction(tempCallings);
-				var promise = setCall(nextCalling);
-				promise.then(function(data) {
-					display(data);
-				});
+				var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
+				promise.then();
 			}
 			
 			function showError(error) {
