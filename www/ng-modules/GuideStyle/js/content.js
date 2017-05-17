@@ -3,36 +3,15 @@
 	
 	angular
 		.module('siiMobilityApp')
-		.controller('GuideStyleCtrl', ['$scope', '$injector', '$ocLazyLoad', '$q', 'PrincipalMenu', 'SiiMobilityService', 'MapManager', 'InfoManager', 'Utility', 'SettingsManager',
-		function($scope, $injector, $ocLazyLoad, $q, PrincipalMenu, SiiMobilityService, MapManager, InfoManager, Utility, SettingsManager) {
+		.controller('GuideStyleCtrl', ['$scope', '$q', 'SiiMobilityService', 'PrincipalMenu', 'MapManager', 'InfoManager', 'Utility',
+		function($scope, $q, SiiMobilityService, PrincipalMenu, MapManager, InfoManager, Utility) {
 			$scope.varName = "GuideStyle";
 			$scope.menuHeaderTitle = "Stile di guida";
 			$scope.selectedDevice = {index: -1};
 			$scope.message = "";
 			$scope.buttonText = "Connect";
 			
-			//Engine coolant temperature
-			var tempCallings = {
-				actualIndex: -1,
-				actions:
-				[
-					{
-						actionName: "reset",
-						method: bluetoothSerial.write,
-						message: "atz\r"
-					},
-					{
-						actionName: "protocol",
-						method: bluetoothSerial.write,
-						message: "atsp0\r"
-					},
-					{
-						actionName: "Engine coolant temperature",
-						method: bluetoothSerial.write,
-						message: "0105"
-					}
-				]
-			}
+			var communicationInitialized = false;
 			
 			function doWork() {
 				PrincipalMenu.hide();
@@ -121,20 +100,29 @@
 					
 					promise = setCall(bluetoothSerial.subscribe, "subscribe", '\r');
 					promise.then(function(data) {
-						clear();
-						if (new RegExp("^41 .*").test(data)) {
-							var bytes = data.split(" ");
-							if (bytes && bytes.length >= 3) {
-								var absTemp = parseInt(bytes[2], 16);
-								var realTemp = absTemp - 40;
-								display("Engine temp: " + realTemp);
-							}
-							else {
-								display("Engine temp: " + "something wrong");
-							}
-						}
+						receiver(data);
 					});
 				});
+			}
+			
+			function receiver(data) {
+				console.log("Received async data: " + data);
+				clear();
+				if (!communicationInitialized) {
+					var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
+					promise.then(function(data) {
+						promise = setCall(bluetoothSerial.write, "protocol", 'atsp0\r');
+						promise.then(function() {
+							communicationInitialized = true;
+						});
+					});
+				}
+				else if (new RegExp("^41\\s.*").test(data)) {
+					convert(data);
+				}
+				else {
+					display("Something wrong");
+				}
 			}
 			
 			function closeConnection() {
@@ -153,8 +141,23 @@
 			}
 			
 			$scope.readTemp = function() {
-				var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
+				var promise = setCall(bluetoothSerial.write, "Engine coolant temperature", '0105\r');
 				promise.then();
+			}
+			
+			function convert(data) {
+				var bytes = data.split(" ");
+				if (bytes && bytes.length >= 3) {
+					var message = bytes[1];
+					if (message === "05") {
+						var absTemp = parseInt(bytes[2], 16);
+						var realTemp = absTemp - 40;
+						display("Engine temp: " + realTemp);
+					}
+				}
+				else {
+					display("Something wrong");
+				}
 			}
 			
 			function showError(error) {
@@ -162,7 +165,7 @@
 			};
 
 			function display(message) {
-				console.log("dbgxxx: " + message);
+				console.log("OnSceen: " + message);
 				if (!$scope.message) {
 					$scope.message = "";
 				}
