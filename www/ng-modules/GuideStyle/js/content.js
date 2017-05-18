@@ -11,7 +11,7 @@
 			$scope.message = "";
 			$scope.buttonText = "Connect";
 			
-			var communicationInitialized = false;
+			$scope.communicationInitialized = false;
 			
 			function doWork() {
 				PrincipalMenu.hide();
@@ -101,6 +101,13 @@
 					promise = setCall(bluetoothSerial.subscribe, "subscribe", '\r');
 					promise.then(function(data) {
 						receiver(data);
+						var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
+						promise.then(function(data) {
+							promise = setCall(bluetoothSerial.write, "protocol", 'atsp0\r');
+							promise.then(function() {
+								$scope.communicationInitialized = true;
+							});
+						});
 					});
 				});
 			}
@@ -108,16 +115,7 @@
 			function receiver(data) {
 				console.log("Received async data: " + data);
 				clear();
-				if (!communicationInitialized) {
-					var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
-					promise.then(function(data) {
-						promise = setCall(bluetoothSerial.write, "protocol", 'atsp0\r');
-						promise.then(function() {
-							communicationInitialized = true;
-						});
-					});
-				}
-				else if (new RegExp("^41\\s.*").test(data)) {
+				if (new RegExp("^41\\s.*").test(data)) {
 					convert(data);
 				}
 				else {
