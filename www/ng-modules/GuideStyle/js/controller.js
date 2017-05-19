@@ -97,18 +97,7 @@
 					// change the button's name:
 					$scope.buttonText = "Disconnect";
 					$scope.canConnect = true;
-					
-					promise = setCall(bluetoothSerial.subscribe, "subscribe", '\r');
-					promise.then(function(data) {
-						receiver(data);
-						var promise = setCall(bluetoothSerial.write, "reset", 'atz\r');
-						promise.then(function(data) {
-							promise = setCall(bluetoothSerial.write, "protocol", 'atsp0\r');
-							promise.then(function() {
-								$scope.communicationInitialized = true;
-							});
-						});
-					});
+					bluetoothSerial.subscribe('\r', receiver, showError);
 				});
 			}
 			
@@ -139,6 +128,11 @@
 			}
 			
 			$scope.readTemp = function() {
+				var promise = setCall(bluetoothSerial.write, "Engine coolant temperature", '0105\r');
+				promise.then();
+			}
+			
+			$scope.readConsumption = function() {
 				var promise = setCall(bluetoothSerial.write, "Engine coolant temperature", '0105\r');
 				promise.then();
 			}

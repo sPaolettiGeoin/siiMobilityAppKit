@@ -1,13 +1,12 @@
 (function() {
 	var siiMobilityApp = angular.module('siiMobilityApp');
 
-	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, $state, $ocLazyLoad, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
+	siiMobilityApp.controller('SiiMobilityController', function SiiMobilityController($scope, $injector, $ocLazyLoad, SiiMobilityService, SettingsManager, GpsManager, ChooseLanguage, ChooseProfile, RelativePath, Globalization, PrincipalMenu, Utility, InfoManager, MapManager) {
 		$.ajax({
 			url: RelativePath.jsonFolder + "languages.json",
 			async: false,
 			dataType: "json",
 			success: function(data) {
-				//console.log("dbg830");
 				$scope.languages = data.languages;
 				//ViewManager.render(data, '#chooseLanguage', 'ChooseLanguage');
 			}
@@ -248,8 +247,9 @@
 		},
 		
 		$scope.launchApp = function(principalMenuButton) {
-			$ocLazyLoad.load("ng-modules/" + principalMenuButton.captionId + "/js/content.js").then(function() {
-				$state.go(principalMenuButton.captionId);
+			$ocLazyLoad.load("ng-modules/" + principalMenuButton.captionId + "/js/controller.js")
+			.then(function() {
+				$scope.dynTemplate = "ng-modules/" + principalMenuButton.captionId + "/template.html";
 			}, function(e) {
 				console.log('errr');
 				console.error(e);

@@ -45,7 +45,6 @@ under the License.
     <!-- OPEN LAYERS 3.12-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,performance.now|always"></script>
     <script type="text/javascript" src="js/angular/angular.min.js"></script>
-	<script type="text/javascript" src="js/angular/angular-ui-router.min.js"></script>
 	<script type="text/javascript" src="js/angular/ocLazyLoad.js"></script>
 	<script type="text/javascript" src="js/angular/ng-cordova.js"></script>
 	<script type="text/javascript" src="cordova.js"></script>
@@ -319,8 +318,8 @@ under the License.
 				</div>
 			</div>
 		</div>
-		<div id="container" class="container">
-			<div ui-view></div>
+		<div id="container" class="container" ng-if="dynTemplate">
+			<div ng-include="dynTemplate"></div>
 		</div>
     </div>
     <div id="testProdAPIAlert" class="testProdAlert" style="left: 10%; width: 15%; height: 32px;">API</div>
