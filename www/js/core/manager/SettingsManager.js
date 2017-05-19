@@ -157,7 +157,7 @@
 			service.open = true;
 			//console.log("dbg170");
 			application.addingMenuToCheck("SettingsManager");
-			application.setBackButtonListener();
+			PrincipalMenu.setBackButtonListener();
 		}
 
 		function hideSettingsMenu () {

@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('InfoManager', InfoManager)
 	
-	InfoManager.$inject = ['Utility', 'MapManager', 'GpsManager'];
-	function InfoManager(Utility, MapManager, GpsManager) {
+	InfoManager.$inject = ['Utility', 'MapManager', 'GpsManager', 'PrincipalMenu'];
+	function InfoManager(Utility, MapManager, GpsManager, PrincipalMenu) {
 		var InfoManager = {
 			open: false,
 			modalImageOpen: false,
@@ -368,7 +368,7 @@
 					application.addingMenuToCheck("InfoManager");
 					Utility.checkAxisToDrag("#infoMenu");
 					$("#serviceImagePreview").panzoom({ minScale: 1, contain: 'invert' });
-					application.setBackButtonListener();
+					PrincipalMenu.setBackButtonListener();
 					break;
 				}
 			},

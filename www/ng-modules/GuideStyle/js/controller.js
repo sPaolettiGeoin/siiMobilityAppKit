@@ -61,7 +61,7 @@
 				$scope.open = true;
 				InfoManager.addingMenuToManage($scope.varName);
 				SiiMobilityService.addingMenuToCheck($scope.varName);
-				SiiMobilityService.setBackButtonListener();
+				PrincipalMenu.setBackButtonListener();
 				//refreshMenu();
 				//$scope.expandHealthCare();
 				Utility.expandMenu("#" + $scope.varName,
@@ -71,33 +71,24 @@
 			
 			$scope.manageConnection = function() {
 				if ($scope.canConnect) {
-					var device = $scope.devices[$scope.selectedDevice.index].address;
-					var promise = setCall(bluetoothSerial.isConnected, "readDeviceState", device);
-					promise.then(function(state) {
-						if (state === "Not connected.") {
-							openConnection();
-						}
-						else {
-							closeConnection();
-						}
-					});
+					bluetoothSerial.isConnected(openConnection, closeConnection);
 				}
 			};
 			
 			function openConnection() {
 				var device = $scope.devices[$scope.selectedDevice.index].address;
 				$scope.canConnect = false;
-				clear();
 				
-				display("Attempting to connect to " + device + ". Make sure the serial port is open on the target device.");
+				display("Attempting to connect to " + device + ". Make sure the serial port is open on the target device.", true);
 				// attempt to connect:
 				var promise = setCall(bluetoothSerial.connect, "connect", device);
 				promise.then(function(data) {
-					display("Connected to: " + device);
+					display("Connected to: " + device, true);
 					// change the button's name:
 					$scope.buttonText = "Disconnect";
 					$scope.canConnect = true;
 					bluetoothSerial.subscribe('\r', receiver, showError);
+					$scope.communicationInitialized = true;
 				});
 			}
 			
@@ -108,7 +99,7 @@
 					convert(data);
 				}
 				else {
-					display("Something wrong");
+					display("Something wrong", false);
 				}
 			}
 			
@@ -116,13 +107,13 @@
 				var device = $scope.devices[$scope.selectedDevice.index].address;
 				var promise = setCall(bluetoothSerial.disconnect, "disconnect");
 				promise.then(function(data) {
-					display("Disconnected from: " + device);
+					display("Disconnected from: " + device, true);
 					// change the button's name:
 					$scope.buttonText = "Connect";
 					// unsubscribe from listening:
 					promise = setCall(bluetoothSerial.unsubscribe, "unsubscribe");
 					promise.then(function(data) {
-						display(data);
+						display(data, false);
 					});
 				});
 			}
@@ -133,39 +124,44 @@
 			}
 			
 			$scope.readConsumption = function() {
+				/*
+				How is Fuel Economy calculated by DawnEdit?
+				FuelEconomy = (lambda * 7.107 * speed / MassAirFlow);
+				Fuel Economy in MPG
+				Speed in KPH
+				MAF in g/s
+				*/
 				var promise = setCall(bluetoothSerial.write, "Engine coolant temperature", '0105\r');
 				promise.then();
 			}
 			
 			function convert(data) {
-				var bytes = data.split(" ");
-				if (bytes && bytes.length >= 3) {
-					var message = bytes[1];
-					if (message === "05") {
-						var absTemp = parseInt(bytes[2], 16);
-						var realTemp = absTemp - 40;
-						display("Engine temp: " + realTemp);
+				if (data && data.length > 0) {
+					var bytes = data.split(" ");
+					if (bytes && bytes.length >= 3) {
+						var message = bytes[1];
+						if (message === "05") {
+							var absTemp = parseInt(bytes[2], 16);
+							var realTemp = absTemp - 40;
+							display("Engine temp: " + realTemp, true);
+						}
 					}
-				}
-				else {
-					display("Something wrong");
+					else {
+						display("Something wrong", false);
+					}
 				}
 			}
 			
 			function showError(error) {
-				display(error);
+				display(error, false);
 			};
 
-			function display(message) {
+			function display(message, clear) {
 				console.log("OnSceen: " + message);
-				if (!$scope.message) {
+				if (clear) {
 					$scope.message = "";
 				}
 				$scope.message += message;
-			};
-			
-			function clear() {
-				$scope.message = "";
 			};
 			
 			doWork();

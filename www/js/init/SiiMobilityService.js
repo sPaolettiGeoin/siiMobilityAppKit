@@ -23,8 +23,6 @@
 		service.resetInterface = resetInterface;
 		service.onResize = onResize;
 		service.removingMenuToCheck = removingMenuToCheck;
-		service.setBackButtonListener = setBackButtonListener;
-		service.resetBackButtonListener = resetBackButtonListener;
 	    
 	    return service;
 		
@@ -70,18 +68,6 @@
 			var index = service.menuToCheckArray.indexOf(menuToCheck);
 			if (index != -1) {
 				service.menuToCheckArray.splice(service.menuToCheckArray.indexOf(menuToCheck), 1);
-			}
-		}
-		
-		function setBackButtonListener() {
-			if (device.platform == "Win32NT" || device.platform == "windows") {
-				document.addEventListener('backbutton', onBackKeyDown, false);
-			}
-		}
-
-		function resetBackButtonListener () {
-			if (device.platform == "Win32NT" || device.platform == "windows") {
-				document.removeEventListener('backbutton', onBackKeyDown, false);
 			}
 		}
 	}

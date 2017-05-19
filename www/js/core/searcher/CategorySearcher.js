@@ -5,8 +5,8 @@
 		.module('siiMobilityApp')
 		.factory('CategorySearcher', CategorySearcher)
 	
-	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService', 'Loading', 'GpsManager'];
-	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService, Loading, GpsManager) {
+	CategorySearcher.$inject = ['Parameters', 'RelativePath', 'Globalization', 'Utility', 'SiiMobilityService', 'Loading', 'GpsManager', 'PrincipalMenu'];
+	function CategorySearcher(Parameters, RelativePath, Globalization, Utility, SiiMobilityService, Loading, GpsManager, PrincipalMenu) {
 		var service = {};
 
 		service.openPanelMenu = false;
@@ -494,7 +494,7 @@
 			service.open = true;
 			InfoManager.addingMenuToManage("CategorySearcher");
 			application.addingMenuToCheck("CategorySearcher");
-			application.setBackButtonListener();
+			PrincipalMenu.setBackButtonListener();
 		}
 
 		function hide () {
@@ -518,7 +518,7 @@
 			if (!service.open) {
 				application.removingMenuToCheck("CategorySearcher");
 			}
-			application.resetBackButtonListener();
+			PrincipalMenu.resetBackButtonListener();
 		}
 
 		function resetSearch () {

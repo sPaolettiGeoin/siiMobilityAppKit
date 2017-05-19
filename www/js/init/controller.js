@@ -70,7 +70,7 @@
 			document.addEventListener('deviceready', onDeviceReady, false);
 			document.addEventListener("pause", onPause, false);
 			document.addEventListener("resume", onResume, false);
-			document.addEventListener('backbutton', onBackKeyDown, false);
+			document.addEventListener('backbutton', PrincipalMenu.onBackKeyDown, false);
 			window.addEventListener('resize', SiiMobilityService.onResize, false);
 		},
 
@@ -140,7 +140,7 @@
 			});
 			//console.log("dbg740");
 			if (device.platform == "Win32NT" || device.platform == "windows") {
-				SiiMobilityService.resetBackButtonListener();
+				PrincipalMenu.resetBackButtonListener();
 			}
 			//console.log("dbg750");
 		},
@@ -155,7 +155,7 @@
 				localStorage.setItem("firstStart", "false");
 				CategorySearcher.newStart = false;
 				application.addingMenuToCheck("CategorySearcher");
-				application.setBackButtonListener();
+				PrincipalMenu.setBackButtonListener();
 				$('#categorySearchMenu').css('height', $('#content').height() + 'px');
 				$("input[name=search]").val(""); 
 				$("input[name=search]").attr("placeholder", Globalization.labels.categorySearchMenu.filter);
@@ -188,51 +188,6 @@
 			ChooseProfile.hide();
 			startingApp();
 		}
-
-		onBackKeyDown = function (event) {
-			//console.log("dbg720");
-			if (device.platform == "Android" || device.platform == "iOS") {
-				if (PrincipalMenu.open && !ChooseLanguage.open && !ChooseProfile.open) {
-					if (PrincipalMenu.modifing) {
-						PrincipalMenu.savePrincipalMenu();
-					} else {
-						PrincipalMenu.resetEventsBadge();
-						close();
-					}
-				}
-			}
-
-			var menuToCheckArray = SiiMobilityService.getMenuToCheckArray();
-			if (menuToCheckArray.length == 0) {
-				PrincipalMenu.show();
-				//console.log("dbg740");
-				if (PrincipalMenu.modifing) {
-					PrincipalMenu.savePrincipalMenu();
-				} else {
-					SiiMobilityService.resetBackButtonListener();
-				}
-			} else {
-				if (window[menuToCheckArray[0]] != null) {
-					if (window[menuToCheckArray[0]]["checkForBackButton"] != null) {
-						window[menuToCheckArray[0]]["checkForBackButton"]();
-					}
-				}
-			}
-
-			if (menuToCheckArray.length == 0) {
-				if (!PrincipalMenu.open && device.platform != "Web") {
-					window.plugins.toast.showWithOptions({
-						message: Globalization.labels.principalMenu.returnMenu,
-						duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
-						position: "bottom",
-						addPixelsY: -40 // added a negative value to move it up a bit (default 0) 
-					},
-						function () { }, // optional
-						function () { } // optional 
-					);
-				}
-			}
-		},
 
 		onPause = function (event) {
 			if (typeof GpsManager != "undefined") {

@@ -46,7 +46,7 @@ var BusRoutesSearcher = {
         BusRoutesSearcher.open = true;
         InfoManager.addingMenuToManage(BusRoutesSearcher.varName);
         application.addingMenuToCheck(BusRoutesSearcher.varName);
-        application.setBackButtonListener();
+        PrincipalMenu.setBackButtonListener();
     },
 
     hide: function () {

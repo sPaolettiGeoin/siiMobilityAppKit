@@ -78,7 +78,7 @@
 				});
 
 				
-				//console.log("dbg030");
+				console.log("dbg030");
 				$.ajax({
 					url: SiiMobilityService.remoteJsonUrl + "principalMenu.json",
 					cache: false,
@@ -90,6 +90,7 @@
 						service.refreshMenu();
 					}
 				});
+				console.log("dbg030bis, dopo syncronous call");
 			},
 
 			loadModulesButton: function (fullPath) {
@@ -201,7 +202,7 @@
 				
 				$('#principalMenu').hide(Parameters.hidePanelGeneralDuration);
 				console.log("dbg060: " + Parameters.hidePanelGeneralDuration);
-				SiiMobilityService.setBackButtonListener();
+				service.setBackButtonListener();
 				service.open = false;
 			},
 
@@ -376,6 +377,61 @@
 					if (service.principalMenuButtons[i] != undefined) {
 						service.principalMenuButtons[i].index = i;
 					}
+				}
+			},
+			onBackKeyDown: function (event) {
+				//console.log("dbg720");
+				if (device.platform == "Android" || device.platform == "iOS") {
+					if (service.open && !ChooseLanguage.open && !ChooseProfile.open) {
+						if (service.modifing) {
+							service.savePrincipalMenu();
+						} else {
+							service.resetEventsBadge();
+							close();
+						}
+					}
+				}
+
+				var menuToCheckArray = SiiMobilityService.getMenuToCheckArray();
+				if (menuToCheckArray.length == 0) {
+					service.show();
+					//console.log("dbg740");
+					if (service.modifing) {
+						service.savePrincipalMenu();
+					} else {
+						service.resetBackButtonListener();
+					}
+				} else {
+					if (window[menuToCheckArray[0]] != null) {
+						if (window[menuToCheckArray[0]]["checkForBackButton"] != null) {
+							window[menuToCheckArray[0]]["checkForBackButton"]();
+						}
+					}
+				}
+
+				if (menuToCheckArray.length == 0) {
+					if (!service.open && device.platform != "Web") {
+						window.plugins.toast.showWithOptions({
+							message: Globalization.labels.principalMenu.returnMenu,
+							duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself. 
+							position: "bottom",
+							addPixelsY: -40 // added a negative value to move it up a bit (default 0) 
+						},
+							function () { }, // optional
+							function () { } // optional 
+						);
+					}
+				}
+			},
+			setBackButtonListener: function () {
+				if (device.platform == "Win32NT" || device.platform == "windows") {
+					document.addEventListener('backbutton', this.onBackKeyDown, false);
+				}
+			},
+
+			resetBackButtonListener: function() {
+				if (device.platform == "Win32NT" || device.platform == "windows") {
+					document.removeEventListener('backbutton', this.onBackKeyDown, false);
 				}
 			}
 		}
