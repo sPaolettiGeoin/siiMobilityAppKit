@@ -504,6 +504,14 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.backgroundServices"
         ]
+    },
+    {
+        "id": "cordova-plugin-bluetooth-serial.bluetoothSerial",
+        "file": "plugins/cordova-plugin-bluetooth-serial/www/bluetoothSerial.js",
+        "pluginId": "cordova-plugin-bluetooth-serial",
+        "clobbers": [
+            "window.bluetoothSerial"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -540,7 +548,8 @@ module.exports.metadata =
     "cordova-plugin-x-toast": "2.5.2",
     "cordova-sms-plugin": "0.1.11",
     "de.appplant.cordova.plugin.local-notification": "0.8.4",
-    "org.disit.siiMobile.backgroundService": "0.1"
+    "org.disit.siiMobile.backgroundService": "0.1",
+    "cordova-plugin-bluetooth-serial": "0.4.7"
 };
 // BOTTOM OF METADATA
 });
