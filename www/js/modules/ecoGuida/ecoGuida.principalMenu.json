@@ -1,0 +1,24 @@
+[
+  {
+    "callback": "PrincipalMenu.hide();EcoGuida.init();",
+    "iconId": "",
+    "iconClass": "glyphicon glyphicon-euro",
+    "iconFontSize": "35px",
+    "iconColor": "#660000",
+    "imgSrc": "",
+    "imgHeight": "",
+    "text": "",
+    "textFontSize": "38px",
+    "textColor": "#CC0000",
+    "captionId": "principalMenuEcoGuida",
+    "captionTextId": "moduleEcoGuida",
+    "step": "",
+    "stepId": "",
+    "ribbon": true,
+    "ribbonId": "",
+    "ribbonStyle": "background: #CC0000;background: linear-gradient(#FF6600 0%, #CC0000 100%);",
+    "ribbonText":  "NEW",
+    "removed": false,
+    "index": 0
+  }
+]
