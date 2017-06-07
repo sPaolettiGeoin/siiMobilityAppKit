@@ -18,10 +18,7 @@ var EcoGuida = {
 		
 		bluetoothSerial.isEnabled(
             function() {bluetoothSerial.list(EcoGuida.onDeviceList, EcoGuida.errorQuery);},
-            function() {
-				EcoGuida.message = "Bluetooth is not enabled.";
-				EcoGuida.refreshMenu();
-				}
+            function() {EcoGuida.showMessage("Bluetooth is not enabled.");}
         )
 			
 		EcoGuida.show();
@@ -62,12 +59,12 @@ var EcoGuida = {
             document.getElementById("deviceList").appendChild(option);
 
             if (cordova.platformId === "ios") { // BLE
-                //app.setStatus("No Bluetooth Peripherals Discovered.");
+                EcoGuida.showMessage("No Bluetooth Peripherals Discovered.");
             } else { // Android or Windows Phone
-                //app.setStatus("Please Pair a Bluetooth Device.");
+                EcoGuida.showMessage("Please Pair a Bluetooth Device.");
             }
         } else {
-            //app.setStatus("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
+            //EcoGuida.showMessage("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
         }
     },
 	connect: function(e) {
@@ -75,7 +72,7 @@ var EcoGuida = {
                 // subscribe for incoming data
                 bluetoothSerial.subscribe('\r', EcoGuida.onData, EcoGuida.errorQuery);
 
-                EcoGuida.message = "Connected";
+                EcoGuida.showMessage("Connected");
 				
 				var interval = 15000;
 				EcoGuida.threadId = setInterval(function() {
@@ -96,7 +93,7 @@ var EcoGuida = {
     },
 	disconnect: function() {
 		var closePort = function() {
-			EcoGuida.message = "Device disconnected";
+			EcoGuida.showMessage("Device disconnected");
 			bluetoothSerial.unsubscribe(
 					function (data) {
 						console.log("After unsubscribing: " + data)
@@ -123,19 +120,17 @@ var EcoGuida = {
 				if (message === "05") {
 					var absTemp = parseInt(bytes[2], 16);
 					var realTemp = absTemp - 40;
-					EcoGuida.message = "Engine temp: " + realTemp;
+					EcoGuida.showMessage("Engine temp: " + realTemp);
 				}
 				else if (message === "0D") {
 					var speed = parseInt(bytes[2], 16);
-					EcoGuida.message = "Speed: " + speed;
+					EcoGuida.showMessage("Speed: " + speed);
 					console.log("Speed: " + speed);
 				}
 			}
 			else {
-				EcoGuida.message += "Something wrong";
+				EcoGuida.showMessage("Something wrong", true);
 			}
-			
-			EcoGuida.refreshMenu();
 		}
 	},
 	show: function () {
@@ -163,6 +158,17 @@ var EcoGuida = {
             EcoGuida.hide();
         }
     },
+	showMessage: function(message, append) {
+		console.log(message);
+		if (append) {
+			EcoGuida.message += message;
+		}
+		else {
+			EcoGuida.message = message;
+		}
+		
+		EcoGuida.refreshMenu();
+	},
     refreshMenu: function () {
         if ($("#" + EcoGuida.idMenu).length == 0) {
 			$("#indexPage").
@@ -200,15 +206,19 @@ var EcoGuida = {
                              "#" + EcoGuida.idMenu + "Collapse");
         EcoGuida.expanded = false;
     },
+	closeThread: function() {
+		if (EcoGuida.threadId != -1) {
+			window.clearInterval(EcoGuida.threadId);
+			EcoGuida.threadId = -1;
+		}
+	},
 
     //callBack
     errorQuery: function(error) {
 		console.log("dbg090: " + JSON.stringify(error));
         navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
 		
-		if (EcoGuida.threadId != -1) {
-			window.clearInterval(EcoGuida.threadId);
-		}
+		EcoGuida.closeThread();
     },
 	successQueryAction: function (responseJson) {
 		console.log("responseJson: " + responseJson);
