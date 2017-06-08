@@ -31,11 +31,7 @@
 	{{/showMap}}
 	
 	<ul id="deviceList"></ul>
-	<button id="refreshButton">Refresh</button>
-	{{#deviceConnected}}
-	<div id="ui">
-		<input type="button" value="Disconnect" onclick="EcoGuida.disconnect();">
-	</div>
-	{{/deviceConnected}}
-	<div>{{message}}</div>
+	<input id="refreshBtn" type="button" value="Refresh">
+	<input id="disconnectBtn" type="button" value="Disconnect">
+	<div id="message"></div>
 </div>

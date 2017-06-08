@@ -12,19 +12,29 @@ var EcoGuida = {
 		EcoGuida.ramanzina4 = Globalization.labels.ecoGuidaMenu.ramanzina4;
 		EcoGuida.ramanzina5 = Globalization.labels.ecoGuidaMenu.ramanzina5;
 		
-		EcoGuida.message = "";
+		EcoGuida.loadPage();
+		
 		EcoGuida.communicationInitialized = false;
 		EcoGuida.threadId = -1;
 		
-		bluetoothSerial.isEnabled(
-            function() {bluetoothSerial.list(EcoGuida.onDeviceList, EcoGuida.errorQuery);},
-            function() {EcoGuida.showMessage("Bluetooth is not enabled.");}
-        )
+		EcoGuida.checkBluetooth();
 			
 		EcoGuida.show();
 		
+		$("#refreshBtn").click(EcoGuida.checkBluetooth);
+		$("#disconnectBtn").click(EcoGuida.disconnect);
 		document.getElementById("deviceList").addEventListener('touchstart', EcoGuida.connect, false);
     },
+	checkBluetooth: function() {
+		bluetoothSerial.isEnabled(
+            EcoGuida.readDeviceList,
+            function() {$("#refreshBtn").show();EcoGuida.showMessage("Bluetooth is not enabled. Abilitarlo e premere il pulsante 'Refresh'");}
+        )
+	},
+	readDeviceList: function() {
+		bluetoothSerial.list(EcoGuida.onDeviceList, EcoGuida.errorQuery);
+		$("#refreshBtn").hide();
+	},
     onDeviceList: function(devices) {
         var option;
 
@@ -64,7 +74,7 @@ var EcoGuida = {
                 EcoGuida.showMessage("Please Pair a Bluetooth Device.");
             }
         } else {
-            //EcoGuida.showMessage("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
+            EcoGuida.showMessage("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
         }
     },
 	connect: function(e) {
@@ -73,6 +83,8 @@ var EcoGuida = {
                 bluetoothSerial.subscribe('\r', EcoGuida.onData, EcoGuida.errorQuery);
 
                 EcoGuida.showMessage("Connected");
+				console.log("dbg444");
+				$("#disconnectBtn").show();
 				
 				var interval = 15000;
 				EcoGuida.threadId = setInterval(function() {
@@ -94,6 +106,8 @@ var EcoGuida = {
 	disconnect: function() {
 		var closePort = function() {
 			EcoGuida.showMessage("Device disconnected");
+			console.log("dbg445");
+			$("#disconnectBtn").hide();
 			bluetoothSerial.unsubscribe(
 					function (data) {
 						console.log("After unsubscribing: " + data)
@@ -137,11 +151,12 @@ var EcoGuida = {
         application.resetInterface();
         MapManager.showMenuReduceMap("#" + EcoGuida.idMenu);
         $("#" + EcoGuida.idMenu + "Expand").hide();
+		console.log("dbg446: " + $("#disconnectBtn"));
+		$("#disconnectBtn").hide();
         EcoGuida.open = true;
         InfoManager.addingMenuToManage(EcoGuida.varName);
         application.addingMenuToCheck(EcoGuida.varName);
         application.setBackButtonListener();
-		EcoGuida.refreshMenu();
 		EcoGuida.expandEcoGuida();
     },
 
@@ -160,16 +175,14 @@ var EcoGuida = {
     },
 	showMessage: function(message, append) {
 		console.log(message);
+		var msgElem = $("#message");
 		if (append) {
-			EcoGuida.message += message;
-		}
-		else {
-			EcoGuida.message = message;
+			message = msgElem.html() + "<br>" + message;
 		}
 		
-		EcoGuida.refreshMenu();
+		msgElem.html(message);
 	},
-    refreshMenu: function () {
+    loadPage: function () {
         if ($("#" + EcoGuida.idMenu).length == 0) {
 			$("#indexPage").
                 append("<div id=\"" + EcoGuida.idMenu + "\" class=\"commonHalfMenu\"></div>")
@@ -216,7 +229,8 @@ var EcoGuida = {
     //callBack
     errorQuery: function(error) {
 		console.log("dbg090: " + JSON.stringify(error));
-        navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
+		EcoGuida.showMessage(error);
+        //navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
 		
 		EcoGuida.closeThread();
     },
@@ -229,7 +243,5 @@ var EcoGuida = {
 		else {
 			console.log("response: " + response);
 		}
-		
-		EcoGuida.refreshMenu();
     },
 }
