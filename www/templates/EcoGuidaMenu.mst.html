@@ -1,38 +1,19 @@
 <div id="ecoGuidaMenuHeader" class="panel panel-default" style="position: absolute;right: 0px;left: 0px;border-radius: 0px;">
-	{{#showMap}}
-    <div id="ecoGuidaMenuExpandHandler" class="grippyContainer grippyContainer-horizontal" style="text-align: center;">
-        <div class="grippy grippy-horizontal"></div>
-    </div>
-	{{/showMap}}
-    <div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
-		{{#showMap}}
-        <a class="pull-right" onclick="EcoGuida.hide();">
-            <i class="glyphicon glyphicon-remove"
-               style="float: right; padding-left: 8px; color: #777; line-height: 52px;"></i>
-        </a>
-        <a id="ecoGuidaMenuExpand" class="pull-left" onclick="EcoGuida.expandEcoGuida();">
-            <i class="glyphicon glyphicon-plus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
-        </a>
-        <a id="ecoGuidaMenuCollapse" class="pull-left" onclick="EcoGuida.collapseEcoGuida();">
-            <i class="glyphicon glyphicon-minus" style="padding-right: 8px; color: #777; line-height: 52px;"></i>
-        </a>
-		{{/showMap}}
+	<div class="panel-heading" style="padding: 0px 10px;height: 52px; border: none;">
         <b style="line-height: 52px;color: #333;">{{menuHeaderTitle}}</b>
     </div>
 </div>
 
 <div id="ecoGuidaMenuInner" class="commonHalfMenuInner">
-	{{^showMap}}
 	{{ramanzina1}}<br>
 	{{ramanzina2}}<br>
 	{{ramanzina3}}<br>
 	{{ramanzina4}}<br>
 	{{ramanzina5}}
-	{{/showMap}}
 	
 	<ul id="carModelsList"></ul>
 	<div id="carModelDiv">
-		<div id="carModel">pippo</div>
+		<div id="carModel"></div>
 		<input type="button" value="Modifica" onclick="EcoGuida.getCarBrands();">
 	</div>
 	<ul id="deviceList"></ul>

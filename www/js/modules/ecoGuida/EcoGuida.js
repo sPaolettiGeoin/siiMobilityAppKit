@@ -1,7 +1,5 @@
 var EcoGuida = {
 	open: false,
-    expanded: false,
-	showMap: false,
     varName: "EcoGuida",
     idMenu: "ecoGuidaMenu",
 	init: function() {
@@ -39,15 +37,6 @@ var EcoGuida = {
         }
 		
         ViewManager.render(EcoGuida, "#" + EcoGuida.idMenu, "EcoGuidaMenu");
-		
-        Utility.movingPanelWithTouch("#" + EcoGuida.idMenu + "ExpandHandler",
-            "#" + EcoGuida.idMenu);
-		
-        if (EcoGuida.expanded) {
-            $("#" + EcoGuida.idMenu + "Expand").hide();
-        } else {
-            $("#" + EcoGuida.idMenu + "Collapse").hide();
-        }
     },
 	getCarBrands: function() {
 		$("#carModelsList").show();
@@ -186,20 +175,19 @@ var EcoGuida = {
 	},
 	show: function () {
         application.resetInterface();
-        MapManager.showMenuReduceMap("#" + EcoGuida.idMenu);
-        $("#" + EcoGuida.idMenu + "Expand").hide();
 		
 		$("#disconnectBtn").hide();
         EcoGuida.open = true;
         InfoManager.addingMenuToManage(EcoGuida.varName);
         application.addingMenuToCheck(EcoGuida.varName);
         application.setBackButtonListener();
-		EcoGuida.expandEcoGuida();
+		Utility.expandMenu("#" + EcoGuida.idMenu,
+                           "#" + EcoGuida.idMenu + "Expand",
+                           "#" + EcoGuida.idMenu + "Collapse");
     },
 
     hide: function () {
         $("#" + EcoGuida.idMenu).css({ 'z-index': '1001' });
-        MapManager.reduceMenuShowMap("#" + EcoGuida.idMenu);
         InfoManager.removingMenuToManage(EcoGuida.varName);
         application.removingMenuToCheck(EcoGuida.varName);
         EcoGuida.open = false;
@@ -223,20 +211,6 @@ var EcoGuida = {
         if (EcoGuida.open) {
             EcoGuida.hide();
         }
-    },
-    
-    expandEcoGuida: function () {
-        Utility.expandMenu("#" + EcoGuida.idMenu,
-                           "#" + EcoGuida.idMenu + "Expand",
-                           "#" + EcoGuida.idMenu + "Collapse");
-        EcoGuida.expanded = true;
-    },
-
-    collapseEcoGuida: function () {
-        Utility.collapseMenu("#" + EcoGuida.idMenu,
-                             "#" + EcoGuida.idMenu + "Expand",
-                             "#" + EcoGuida.idMenu + "Collapse");
-        EcoGuida.expanded = false;
     },
 	closeThread: function() {
 		if (EcoGuida.threadId != -1) {
