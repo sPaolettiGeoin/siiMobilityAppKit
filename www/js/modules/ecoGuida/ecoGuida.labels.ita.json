@@ -6,8 +6,8 @@
     "title": "Eco guida",
 	"ramanzina1": "Questa app permette di giudicare il proprio stile di guida.",
 	"ramanzina2": "Per ottenere cio', e' necessario:",
-	"ramanzina3": " 1) il GPS attivo;",
-	"ramanzina4": " 2) il bluetooth attivo;",
-	"ramanzina5": " 3) possedere e accoppiare un tongle che si interfacci con il connettore OBD2 eventualmente presente sulla vostra macchina."
+	"ramanzina3": " 1) un veicolo che disponga di un connettore OBD2 e un tongle che si interfacci con tale connettore;",
+	"ramanzina4": " 2) il bluetooth attivo e accoppiato al tongle;",
+	"ramanzina5": " 3) il GPS attivo."
   }
 }

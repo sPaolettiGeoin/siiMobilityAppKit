@@ -18,6 +18,13 @@ var EcoGuida = {
 		EcoGuida.threadId = -1;
 		
 		EcoGuida.checkBluetooth();
+		
+		if (localStorage.getItem("ecoGuidaCarModel") == null) {
+			EcoGuida.getCarBrands();
+		}
+		else {
+			EcoGuida.loadCarModel();
+		}
 			
 		EcoGuida.show();
 		
@@ -25,6 +32,42 @@ var EcoGuida = {
 		$("#disconnectBtn").click(EcoGuida.disconnect);
 		document.getElementById("deviceList").addEventListener('touchstart', EcoGuida.connect, false);
     },
+	loadPage: function () {
+        if ($("#" + EcoGuida.idMenu).length == 0) {
+			$("#indexPage").
+                append("<div id=\"" + EcoGuida.idMenu + "\" class=\"commonHalfMenu\"></div>")
+        }
+		
+        ViewManager.render(EcoGuida, "#" + EcoGuida.idMenu, "EcoGuidaMenu");
+		
+        Utility.movingPanelWithTouch("#" + EcoGuida.idMenu + "ExpandHandler",
+            "#" + EcoGuida.idMenu);
+		
+        if (EcoGuida.expanded) {
+            $("#" + EcoGuida.idMenu + "Expand").hide();
+        } else {
+            $("#" + EcoGuida.idMenu + "Collapse").hide();
+        }
+    },
+	getCarBrands: function() {
+		$("#carModelsList").show();
+		$("#carModelDiv").hide();
+        var actionQuery = "/ecoGuide/carBrands/";
+		ecoGuidaAPIClient.executeQuery(actionQuery, EcoGuida.successQueryAction, EcoGuida.errorQuery);
+    },
+	getCarModels: function(brand) {
+		var actionQuery = "/ecoGuide/carModels/?brand=" + brand;
+		ecoGuidaAPIClient.executeQuery(actionQuery, EcoGuida.successQueryAction, EcoGuida.errorQuery);
+    },
+	setCarModel: function(carModel) {
+		localStorage.setItem("ecoGuidaCarModel", carModel);
+		EcoGuida.loadCarModel();
+	},
+	loadCarModel: function() {
+		$("#carModelsList").hide();
+		$("#carModelDiv").show();
+		$("#carModel").html(localStorage.getItem("ecoGuidaCarModel"));
+	},
 	checkBluetooth: function() {
 		bluetoothSerial.isEnabled(
             EcoGuida.readDeviceList,
@@ -36,18 +79,12 @@ var EcoGuida = {
 		$("#refreshBtn").hide();
 	},
     onDeviceList: function(devices) {
-        var option;
-
         // remove existing devices
         document.getElementById("deviceList").innerHTML = "";
-        //app.setStatus("");
 
         devices.forEach(function(device) {
-
-            var listItem = document.createElement('li'),
-                html = '<b>' + device.name + '</b><br/>' + device.id;
-
-            listItem.innerHTML = html;
+            var listItem = document.createElement('li');
+            listItem.innerHTML = '<b>' + device.name + '</b><br/>' + device.id;
 
             if (cordova.platformId === 'windowsphone') {
 				// This is a temporary hack until I get the list tap working
@@ -64,7 +101,7 @@ var EcoGuida = {
         });
 
         if (devices.length === 0) {
-            option = document.createElement('option');
+            var option = document.createElement('option');
             option.innerHTML = "No Bluetooth Devices";
             document.getElementById("deviceList").appendChild(option);
 
@@ -83,7 +120,7 @@ var EcoGuida = {
                 bluetoothSerial.subscribe('\r', EcoGuida.onData, EcoGuida.errorQuery);
 
                 EcoGuida.showMessage("Connected");
-				console.log("dbg444");
+
 				$("#disconnectBtn").show();
 				
 				var interval = 15000;
@@ -106,7 +143,7 @@ var EcoGuida = {
 	disconnect: function() {
 		var closePort = function() {
 			EcoGuida.showMessage("Device disconnected");
-			console.log("dbg445");
+			
 			$("#disconnectBtn").hide();
 			bluetoothSerial.unsubscribe(
 					function (data) {
@@ -151,7 +188,7 @@ var EcoGuida = {
         application.resetInterface();
         MapManager.showMenuReduceMap("#" + EcoGuida.idMenu);
         $("#" + EcoGuida.idMenu + "Expand").hide();
-		console.log("dbg446: " + $("#disconnectBtn"));
+		
 		$("#disconnectBtn").hide();
         EcoGuida.open = true;
         InfoManager.addingMenuToManage(EcoGuida.varName);
@@ -182,24 +219,6 @@ var EcoGuida = {
 		
 		msgElem.html(message);
 	},
-    loadPage: function () {
-        if ($("#" + EcoGuida.idMenu).length == 0) {
-			$("#indexPage").
-                append("<div id=\"" + EcoGuida.idMenu + "\" class=\"commonHalfMenu\"></div>")
-        }
-		
-        ViewManager.render(EcoGuida, "#" + EcoGuida.idMenu, "EcoGuidaMenu");
-		
-        Utility.movingPanelWithTouch("#" + EcoGuida.idMenu + "ExpandHandler",
-            "#" + EcoGuida.idMenu);
-		
-        if (EcoGuida.expanded) {
-            $("#" + EcoGuida.idMenu + "Expand").hide();
-        } else {
-            $("#" + EcoGuida.idMenu + "Collapse").hide();
-        }
-    },
-
     closeAll: function () {
         if (EcoGuida.open) {
             EcoGuida.hide();
@@ -227,10 +246,14 @@ var EcoGuida = {
 	},
 
     //callBack
-    errorQuery: function(error) {
+    errorQuery: function(error, apiError) {
 		console.log("dbg090: " + JSON.stringify(error));
-		EcoGuida.showMessage(error);
-        //navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
+		if (apiError) {
+			navigator.notification.alert(Globalization.alerts.servicesServerError.message, function() {}, Globalization.alerts.servicesServerError.title);
+		}
+		else {
+			EcoGuida.showMessage(error);
+		}
 		
 		EcoGuida.closeThread();
     },
@@ -238,7 +261,42 @@ var EcoGuida = {
 		console.log("responseJson: " + responseJson);
 		var response = JSON.parse(responseJson);
 		if (response && response.status && response.status.error_code === 0) {
-			
+			var actionQuery = response.status.current_operation;
+			if (actionQuery === "/ecoGuide/carBrands/") {
+				var carBrands = response.data.carBrands;
+				document.getElementById("carModelsList").innerHTML = "";
+
+				carBrands.forEach(function(carBrand) {
+
+					var listItem = document.createElement('li');
+					listItem.innerHTML = '<b onclick="EcoGuida.getCarModels(\'' + carBrand + '\');">' + carBrand + '</b><br/>' + carBrand;
+
+					if (cordova.platformId === 'windowsphone') {
+						//
+					} else {
+						listItem.dataset.carBrand = carBrand;
+					}
+					document.getElementById("carModelsList").appendChild(listItem);
+				});
+			}
+			else if (actionQuery === "/ecoGuide/carModels/") {
+				var carModels = response.data.carModels;
+				document.getElementById("carModelsList").innerHTML = "";
+
+				carModels.forEach(function(carModel) {
+					var listItem = document.createElement('li');
+					listItem.innerHTML = '<b onclick="EcoGuida.setCarModel(\'' + carModel + '\');">' + carModel + '</b><br/>' + carModel;
+
+					if (cordova.platformId === 'windowsphone') {
+						//
+					} else {
+						listItem.dataset.carModel = carModel;
+					}
+					document.getElementById("carModelsList").appendChild(listItem);
+				});
+				var returnBtnHtml = "<input type='button' value='Torna ai brands' onclick='EcoGuida.getCarBrands();'>";
+				document.getElementById("carModelsList").innerHTML += "<br>" + returnBtnHtml;
+			}
 		}
 		else {
 			console.log("response: " + response);

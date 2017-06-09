@@ -4,7 +4,7 @@ var appoAPIClient = {
 					{"key": "walk_more", "value": "Camminare di piu'"}],
 	executeQuery: function(actionQuery, successQueryAction, errorQuery) {
 		console.log("actionQuery: " + actionQuery);
-		//console.log("actionQuery.split('?')[0]: " + actionQuery.split("?")[0]);
+		
 		var action;
 		var params = null;
 		if (actionQuery.indexOf("?") > -1) {
