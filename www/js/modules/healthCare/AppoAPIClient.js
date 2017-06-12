@@ -1,5 +1,5 @@
 var appoAPIClient = {
-	hints: ["Utilizza le scale al posto dell'ascensore", "Usi sempre l'auto e fai poco moto. Lo sai che camminando 10 minuti ogni giorno consumi 100 calorie?"],
+	hints: ["Questa settimana ti sei spostato per 100 km in auto, per 5 in bus ed hai camminato per 2 km bruciando 50 calorie"],
 	healthOptions: [{"key": "lose_weight", "value": "Perdere peso"},
 					{"key": "walk_more", "value": "Camminare di piu'"}],
 	executeQuery: function(actionQuery, successQueryAction, errorQuery) {

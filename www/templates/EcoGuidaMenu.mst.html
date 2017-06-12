@@ -19,5 +19,11 @@
 	<ul id="deviceList"></ul>
 	<input id="refreshBtn" type="button" value="Refresh">
 	<input id="disconnectBtn" type="button" value="Disconnect">
-	<div id="message"></div>
+	<select id="command" name="command" style="font-size:20px">
+		<option value="010D">Speed</option>
+		<option value="010B">Intake manifold absolute pressure</option>
+		<option value="010F">Intake air temperature</option>
+		<option value="0110">Mass air flow</option>
+	</select>
+	<div id="message" style="font-size:20px"></div>
 </div>

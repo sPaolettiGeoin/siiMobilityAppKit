@@ -115,10 +115,12 @@ var EcoGuida = {
 				var interval = 15000;
 				EcoGuida.threadId = setInterval(function() {
 					var success = function() {
-						console.log("sent message: 010D");
+						var command = $("#command").val();
+						console.log("sent message: " + command);
 					};
 
-					bluetoothSerial.write("010D\r", success, EcoGuida.errorQuery);
+					var command = $("#command").val();
+					bluetoothSerial.write(command + "\r", success, EcoGuida.errorQuery);
 				}, interval);
             };
 
@@ -165,7 +167,18 @@ var EcoGuida = {
 				else if (message === "0D") {
 					var speed = parseInt(bytes[2], 16);
 					EcoGuida.showMessage("Speed: " + speed);
-					console.log("Speed: " + speed);
+				}
+				else if (message === "0B") {
+					var intakeManifoldAbsolutePressure = parseInt(bytes[2], 16);
+					EcoGuida.showMessage("Intake manifold absolute pressure: " + intakeManifoldAbsolutePressure);
+				}
+				else if (message === "0F") {
+					var intakeAirTemperature = parseInt(bytes[2], 16) - 40;
+					EcoGuida.showMessage("Intake air temperature: " + intakeAirTemperature);
+				}
+				else if (message === "10") {
+					var massAirFlow = (256 * parseInt(bytes[2], 16) + parseInt(bytes[3], 16)) / 100;
+					EcoGuida.showMessage("Mass air flow: " + massAirFlow);
 				}
 			}
 			else {
